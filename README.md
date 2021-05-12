@@ -2,13 +2,15 @@
 <img  src="https://static0.twilio.com/marketing/bundles/marketing/img/logos/wordmark-red.svg"  alt="Twilio"  width="250"  />
 </a>
 
-# Twilio Flex Plugin - Supervisor Barge-In and Coach
+# Flex Supervisor Barge-In and Coach Plugin
 
-Twilio Flex Plugins allow you to customize the appearance and behavior of [Twilio Flex](https://www.twilio.com/flex). If you want to learn more about the capabilities and how to use the API, check out our [Flex documentation](https://www.twilio.com/docs/flex).
+The Flex Supervisor Barge-In and Coach plugin allows contact center supervisors to barge in and coach agents while they are on a live call. This plugin adds two buttons for barging in and coachingto the Flex UI. Within Teams View, you can click on the agent you wish to monitor and the buttons will be available once you begin to monitor the live calls. 
 
-This plugin adds a barge-in and coach button to the Monitor call canvas.  You can get to this via the Team View, click on the agent you wish to monitor and the buttons will be available once you begin to monitor the live calls.  The left button is the Barge-In button which allows you to join the conference all with the agent(s) and customer(s).  Toggling this button will mute/unmute yourself.  The right button is the Coach button which allows you to talk to the agent you are monitoring.  The no other member of the call will be able to hear you except for the monitored agent.  Toggling this button enables Coach and the left button converts to a Mute/Un-Mute button for the coaching mode.
+## How it works
 
-First select the call/worker you wish to monitor
+The Barge-In button on the left allows you to join the conference with the agent(s) and customer(s). You can toggle the button to mute and unmute yourself.  The Coach button on the right allows you to **only** talk to the agent you are monitoring, leaving the customer out of the coaching segment of the call. Toggling this button enables Coach and the left button converts to a Mute/Un-Mute button for the coaching mode.
+
+First, select the call/worker you wish to monitor.
 
 ![Plugin Demo](https://github.com/aestellwag/plugin-supervisor-barge-coach/blob/main/Supervisor-Barge-Coach-Plugin-1.gif)
 
