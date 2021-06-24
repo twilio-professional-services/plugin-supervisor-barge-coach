@@ -1,6 +1,6 @@
 {
   "name": "plugin-supervisor-barge-coach",
-  "version": "4.0.0",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "postinstall": "flex-plugin pre-script-check"
@@ -8,13 +8,13 @@
   "dependencies": {
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
-    "flex-plugin-scripts": "^4.5.0-beta.0",
     "moment": "2.24.0",
     "moment-timezone": "0.5.28",
     "react": "16.5.2",
     "react-dom": "16.5.2",
     "react-moment": "0.9.7",
-    "url-join": "^4.0.1"
+    "url-join": "^4.0.1",
+    "flex-plugin-scripts": "4.0.1"
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1",
