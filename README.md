@@ -33,7 +33,7 @@ To deploy this plugin, you will need:
   npm install twilio-cli -g
   # Install the Serverless and Flex as Plugins
   twilio plugins:install @twilio-labs/plugin-serverless
-  twilio plugins:install @twilio-labs/plugin-flex@beta
+  twilio plugins:install @twilio-labs/plugin-flex
   ```
 - A GitHub account
 
@@ -63,21 +63,15 @@ Navigate to the serverless folder, create and modify the .env file
 cd ..
 cd serverless
 ***rename the .env.example file to .env and change the below:
-ACCOUNT_SID= Found at https://www.twilio.com/console
-AUTH_TOKEN= Found at https://www.twilio.com/console 
+TWILIO_ACCOUNT_SID= Found at https://www.twilio.com/console
+TWILIO_AUTH_TOKEN= Found at https://www.twilio.com/console 
 TWILIO_WORKSPACE_SID = WSXXXXXXXXXXXXXXXXXX
 ```
 
-Run NPM install for the serverless functions
+Run npm install for the serverless functions
 ```bash
 Run: (from the serverless directory)
 npm install
-```
-
-Install the twilio plugin-serverless
-```bash
-Run: 
-twilio plugins:install @twilio-labs/plugin-serverless
 ```
 
 Deploy the serverless functions into Twilio
@@ -103,7 +97,7 @@ var REACT_APP_TASK-CHANNEL_SID =
 Points to Voice Channel SID - Can be found by going to https://www.twilio.com/console/taskrouter/dashboard > click on Workspaces > then Task Channels
 ```
 
-From the public folder, create the appConfig.js and change on variable within it
+From the public folder, create the appConfig.js and change one variable within it:
 ```bash
 cd public
 rename appConfig.example.js to appConfig.js
