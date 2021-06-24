@@ -61,7 +61,10 @@ typings/
 # next.js build output
 .next
 
-# Flex related ignore
+# Flex-related ignore
 appConfig.js
 pluginsService.js
 build/
+
+# CLI-related ignore
+serverless/.twiliodeployinfo
