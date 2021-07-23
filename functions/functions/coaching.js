@@ -10,7 +10,7 @@ const TokenValidator = require('twilio-flex-token-validator').functionValidator;
 exports.handler = TokenValidator(async (context, event, callback) => {
   /*
    * '*' allows being called from any origin, this not the best security
-   * practice and should only be used for testing; when builiding
+   * practice and should only be used for testing; when building
    * a production plugin you should set the allowed origin to
    * 'https://flex.twilio.com' (or any custom domain serving the plugin)
    */
@@ -27,9 +27,8 @@ exports.handler = TokenValidator(async (context, event, callback) => {
   const client = context.getTwilioClient();
 
   // We first have to toggle the Coaching status to true/false and pass in the agent sid we are coaching
-  let participantResponse;
   try {
-    participantResponse = await client.conferences(conference).participants(participant).update({
+    const participantResponse = await client.conferences(conference).participants(participant).update({
       coaching,
       callSidToCoach: agentSid,
     });
@@ -50,7 +49,7 @@ exports.handler = TokenValidator(async (context, event, callback) => {
   }
   // Once we have set the coaching status, we can now unmute our line
   try {
-    participantResponse = await client.conferences(conference).participants(participant).update({ muted });
+    const participantResponse = await client.conferences(conference).participants(participant).update({ muted });
     response.setBody({
       status: 200,
       participantResponse,

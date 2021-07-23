@@ -3,7 +3,7 @@ import { Manager, Actions, VERSION } from '@twilio/flex-ui';
 import React from 'react';
 import { SyncClient } from 'twilio-sync';
 
-import { SyncDoc } from './services/Sync';
+import { syncService } from './services';
 import SupervisorBargeCoachButton from './components/SupervisorBargeCoachButton';
 import CoachingStatusPanel from './components/CoachingStatusPanel';
 import SupervisorPrivateToggle from './components/SupervisorPrivateModeButton';
@@ -41,7 +41,7 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
    * @param flex { typeof import('@twilio/flex-ui') }
    * @param manager { import('@twilio/flex-ui').Manager }
    */
-  init(flex, manager) {
+  init = async (flex, manager) => {
     // Registering the custom reducer/redux store
     this.registerReducers(manager);
     // Add the Barge-in and Coach Option
@@ -80,12 +80,12 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
 
       // Invoke action to trigger the monitor button so we can populate the stickyWorker attribute
       console.log(`Triggering the invokeAction`);
-      Actions.invokeAction('SelectTaskInSupervisor', { sid: teamViewTaskSID });
+      await Actions.invokeAction('SelectTaskInSupervisor', { sid: teamViewTaskSID });
 
       // If agentSyncDoc exists, clear the Agent Sync Doc to account for the refresh
       const agentSyncDoc = localStorage.getItem('agentSyncDoc');
       if (agentSyncDoc !== null) {
-        SyncDoc.clearSyncDoc(agentSyncDoc);
+        await syncService.clearSyncDoc(agentSyncDoc);
       }
       /*
        * This is here if the Supervisor refreshes and has toggled alerts to false
@@ -103,7 +103,7 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
 
     // Add listener to loginHandler to refresh token when it expires
     manager.store.getState().flex.session.loginHandler.on('tokenUpdated', tokenUpdateHandler);
-  } // end init
+  }; // end init
 
   /**
    * Registers the plugin reducers
@@ -119,4 +119,4 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
 
     manager.store.addReducer(namespace, reducers);
   }
-} // end SupervisorBargeCoachPlugin
+}

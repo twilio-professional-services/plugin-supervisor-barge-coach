@@ -17,7 +17,7 @@ class ConferenceService {
         participant: participantSid,
         muted,
       })
-        .then((response) => {
+        .then(() => {
           console.log(`${muted ? 'Muting' : 'Unmuting'} successful for participant`, participantSid);
           resolve();
         })
@@ -55,7 +55,7 @@ class ConferenceService {
         coaching,
         agentSid,
       })
-        .then((response) => {
+        .then(() => {
           console.log(`${coaching ? 'Enabling Coach' : 'Disabling Coach'} successful for participant`, participantSid);
           resolve();
         })
@@ -80,6 +80,4 @@ class ConferenceService {
   };
 }
 
-const conferenceService = new ConferenceService();
-
-export default conferenceService;
+export default new ConferenceService();

@@ -1,7 +1,7 @@
 import { Actions, Manager } from '@twilio/flex-ui';
 
 import { Actions as BargeCoachStatusAction, initialState } from '../states/BargeCoachState';
-import { SyncDoc } from '../services/Sync';
+import { syncService } from '../services';
 
 const manager = Manager.getInstance();
 
@@ -25,7 +25,7 @@ Actions.addListener('afterMonitorCall', () => {
  * Listening for supervisor to click to unmonitor the call to disable the
  * barge and coach buttons, as well as reset their muted/coaching states
  */
-Actions.addListener('afterStopMonitoringCall', (payload) => {
+Actions.addListener('afterStopMonitoringCall', async () => {
   console.log(`Unmonitor button triggered, disable the Coach and Barge-In Buttons`);
   manager.store.dispatch(
     BargeCoachStatusAction.setBargeCoachStatus({
@@ -43,7 +43,7 @@ Actions.addListener('afterStopMonitoringCall', (payload) => {
    * We don't care about the second or forth section in here as we are removing the Supervisor in this case
    * Typically we would pass in the conferenceSID and what the supervisor is doing (see SupervisorBargeCoachButton.js if you wish to see that in use)
    */
-  SyncDoc.initSyncDoc(agentWorkerSID, '', supervisorFN, '', 'remove');
+  await syncService.initSyncDoc(agentWorkerSID, '', supervisorFN, '', 'remove');
 });
 
 /*
@@ -58,8 +58,8 @@ if (coachingStatusPanel) {
    * for the CoachStatePanel feature
    */
   manager.workerClient.on('reservationCreated', (reservation) => {
-    // Register listener for reservation wrapup event
-    reservation.on('wrapup', () => {
+    // Register listener for reservation wrap-up event
+    reservation.on('wrapup', async () => {
       console.log(`Hangup button triggered, clear the Sync Doc`);
       manager.store.dispatch(
         BargeCoachStatusAction.setBargeCoachStatus({
@@ -72,8 +72,8 @@ if (coachingStatusPanel) {
       const agentWorkerSID = manager.store.getState().flex?.worker?.worker?.sid;
       const agentSyncDoc = `syncDoc.${agentWorkerSID}`;
       // Let's clear the Sync Document and also close/end our subscription to the Document
-      SyncDoc.clearSyncDoc(agentSyncDoc);
-      SyncDoc.closeSyncDoc(agentSyncDoc);
+      await syncService.clearSyncDoc(agentSyncDoc);
+      await syncService.closeSyncDoc(agentSyncDoc);
     });
   });
 }

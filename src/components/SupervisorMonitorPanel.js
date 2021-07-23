@@ -4,7 +4,7 @@ import styled from 'react-emotion';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { SyncDoc } from '../services/Sync';
+import { syncService } from '../services';
 import { Actions as BargeCoachStatusAction } from '../states/BargeCoachState';
 
 const Status = styled('div')`
@@ -41,8 +41,9 @@ class SupervisorMonitorPanel extends React.Component {
      * if we are being coached, if we are, render that in the UI
      * otherwise leave it blank
      */
+    // TODO: FIX THIS ASAP
     const mySyncDoc = `syncDoc.${agentWorkerSID}`;
-    SyncDoc.getSyncDoc(mySyncDoc).then((doc) => {
+    syncService.getSyncDoc(mySyncDoc).then((doc) => {
       // We are subscribing to Sync Doc updates here and logging anytime that happens
       doc.on('updated', (updatedDoc) => {
         if (doc.value.data.supervisors === null) {
@@ -58,7 +59,7 @@ class SupervisorMonitorPanel extends React.Component {
       });
     });
 
-    if (this.props.supervisorArray.length !== 0) {
+    if (this.props.supervisorArray.length === 0) {
       return (
         <Status>
           <div>
