@@ -1,13 +1,10 @@
 import React from 'react';
 import { withTheme } from '@twilio/flex-ui';
 import styled from '@emotion/styled';
-
-// Used for the custom redux state
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Actions as BargeCoachStatusAction, } from '../states/BargeCoachState';
 
-// Import to get Sync Doc updates
+import { Actions as BargeCoachStatusAction } from '../states/BargeCoachState';
 import { SyncDoc } from '../services/Sync';
 
 const Status = styled('div')`
@@ -23,53 +20,53 @@ const Status = styled('div')`
 `;
 
 class CoachingStatusPanel extends React.Component {
-
   render() {
-    const myWorkerSID = this.props.myWorkerSID;
-    let supervisorArray = this.props.supervisorArray;   
-    // Let's subscribe to the sync doc as an agent/work and check
-    // if we are being coached, if we are, render that in the UI
-    // otherwise leave it blank
+    const { myWorkerSID } = this.props;
+    let { supervisorArray } = this.props;
+    /*
+     * Let's subscribe to the sync doc as an agent/work and check
+     * if we are being coached, if we are, render that in the UI
+     * otherwise leave it blank
+     */
     const mySyncDoc = `syncDoc.${myWorkerSID}`;
-    SyncDoc.getSyncDoc(mySyncDoc)
-    .then(doc => {
+    SyncDoc.getSyncDoc(mySyncDoc).then((doc) => {
       // We are subscribing to Sync Doc updates here and logging anytime that happens
-      doc.on("updated", updatedDoc => {
-        if (doc.value.data.supervisors != null) {
-          supervisorArray = [...doc.value.data.supervisors];
-        } else {
+      doc.on('updated', () => {
+        if (doc.value.data.supervisors === null) {
           supervisorArray = [];
+        } else {
+          supervisorArray = [...doc.value.data.supervisors];
         }
 
         // Set Supervisor's name that is coaching into props
-        this.props.setBargeCoachStatus({ 
-          supervisorArray: supervisorArray
+        this.props.setBargeCoachStatus({
+          supervisorArray,
         });
-      })
+      });
     });
-    // If the supervisor array has value in it, that means someone is coaching
-    // We will map each of the supervisors that may be actively coaching
-    // Otherwise we will not display anything if no one is actively coaching
-    if (this.props.supervisorArray.length != 0) {
+    /*
+     * If the supervisor array has value in it, that means someone is coaching
+     * We will map each of the supervisors that may be actively coaching
+     * Otherwise we will not display anything if no one is actively coaching
+     */
+    if (this.props.supervisorArray.length !== 0) {
       return (
         <Status>
-          <div>You are being Coached by: 
-            <h1 style={{ "color": 'green' }}>
+          <div>
+            You are being Coached by:
+            <h1 style={{ color: 'green' }}>
               <ol>
-                {supervisorArray.map(supervisorArray => (
-                  <li key={supervisorArray.supervisor}>{supervisorArray.supervisor}</li>
+                {supervisorArray.map((arr) => (
+                  <li key={arr.supervisor}>{arr.supervisor}</li>
                 ))}
               </ol>
             </h1>
           </div>
         </Status>
       );
-    } else {
-      return (
-        <Status>
-        </Status>
-      );
     }
+
+    return <Status />;
   }
 }
 
@@ -77,19 +74,23 @@ class CoachingStatusPanel extends React.Component {
 const mapStateToProps = (state) => {
   const myWorkerSID = state?.flex?.worker?.worker?.sid;
 
-  // Also pulling back the states from the redux store as we will use those later
-  // to manipulate the buttons
+  /*
+   * Also pulling back the states from the redux store as we will use those later
+   * to manipulate the buttons
+   */
   const customReduxStore = state?.['barge-coach'].bargecoach;
-  const supervisorArray = customReduxStore.supervisorArray;
-  
+  const { supervisorArray } = customReduxStore;
+
   return {
     myWorkerSID,
     supervisorArray,
   };
 };
 
-// Mapping dispatch to props as I will leverage the setBargeCoachStatus
-// to change the properties on the redux store, referenced above with this.props.setBargeCoachStatus
+/*
+ * Mapping dispatch to props as I will leverage the setBargeCoachStatus
+ * to change the properties on the redux store, referenced above with this.props.setBargeCoachStatus
+ */
 const mapDispatchToProps = (dispatch) => ({
   setBargeCoachStatus: bindActionCreators(BargeCoachStatusAction.setBargeCoachStatus, dispatch),
 });

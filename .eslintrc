@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "twilio"
+  ],
+  "rules": {
+    "import/no-extraneous-dependencies": "off",
+    "no-console": "off",
+    "sonarjs/no-identical-functions": "warn"
+  }
+}
