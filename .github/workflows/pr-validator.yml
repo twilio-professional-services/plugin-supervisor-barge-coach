@@ -24,6 +24,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: cp public/appConfig.example.js public/appConfig.js
-      - run: npm ci
+      - name: Installing dependencies
+        run: npm ci && cd functions && npm ci && cd ..
       - name: Run linter
         run: npm run lint
