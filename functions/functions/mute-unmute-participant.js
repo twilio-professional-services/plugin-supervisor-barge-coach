@@ -1,16 +1,16 @@
 /*
  * Using the TokenValidator to authenticate so we can query the API
  * We could do this directly from the plugin, but that requires us to provide
- * the AccoundSID and AuthToken, which we do not want to have leak into the front end
+ * the AccountSid and AuthToken, which we do not want to have leak into the front end
  * This the #1 why we are query this via a function vs directly in the plugin!
  */
 
 const TokenValidator = require('twilio-flex-token-validator').functionValidator;
 
-exports.handler = async (context, event, callback) => {
+exports.handler = TokenValidator(async (context, event, callback) => {
   /*
    * '*' allows being called from any origin, this not the best security
-   * practice and should only be used for testing; when builiding
+   * practice and should only be used for testing; when building
    * a production plugin you should set the allowed origin to
    * 'https://flex.twilio.com' (or any custom domain serving the plugin)
    */
@@ -42,6 +42,5 @@ exports.handler = async (context, event, callback) => {
     response.setStatusCode(error.status || 500);
   }
 
-  console.log('done');
   return callback(null, response);
-};
+});
