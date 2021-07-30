@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { Actions as BargeCoachStatusAction } from '../states/BargeCoachState';
-import { syncClient } from '../services';
+import AbstractPanel from './AbstractPanel';
 
 const Status = styled('div')`
   font-size: 14px;
@@ -19,54 +19,40 @@ const Status = styled('div')`
   text-align: center;
 `;
 
-class CoachingStatusPanel extends React.Component {
-  render() {
-    const { myWorkerSID } = this.props;
-    let { supervisorArray } = this.props;
-    /*
-     * Let's subscribe to the sync doc as an agent/work and check
-     * if we are being coached, if we are, render that in the UI
-     * otherwise leave it blank
-     */
-    const mySyncDoc = `syncDoc.${myWorkerSID}`;
-    syncClient.getSyncDoc(mySyncDoc).then((doc) => {
-      // We are subscribing to Sync Doc updates here and logging anytime that happens
-      doc.on('updated', () => {
-        if (doc.value.data.supervisors === null) {
-          supervisorArray = [];
-        } else {
-          supervisorArray = [...doc.value.data.supervisors];
-        }
+class CoachingStatusPanel extends AbstractPanel {
+  componentDidUpdate = async () => {
+    // Setup the listener if it hasn't already and we have an workerSid
+    if (!this.doc && this.props.myWorkerSID) {
+      await this.setupListener(`syncDoc.${this.props.myWorkerSID}`);
+    }
+  };
 
-        // Set Supervisor's name that is coaching into props
-        this.props.setBargeCoachStatus({
-          supervisorArray,
-        });
-      });
-    });
+  render() {
+    const { supervisorArray } = this.props;
+
     /*
      * If the supervisor array has value in it, that means someone is coaching
      * We will map each of the supervisors that may be actively coaching
      * Otherwise we will not display anything if no one is actively coaching
      */
-    if (this.props.supervisorArray.length !== 0) {
-      return (
-        <Status>
-          <div>
-            You are being Coached by:
-            <h1 style={{ color: 'green' }}>
-              <ol>
-                {supervisorArray.map((arr) => (
-                  <li key={arr.supervisor}>{arr.supervisor}</li>
-                ))}
-              </ol>
-            </h1>
-          </div>
-        </Status>
-      );
+    if (supervisorArray.length === 0) {
+      return <Status />;
     }
 
-    return <Status />;
+    return (
+      <Status>
+        <div>
+          You are being Coached by:
+          <h1 style={{ color: 'green' }}>
+            <ol>
+              {supervisorArray.map((arr) => (
+                <li key={arr.supervisor}>{arr.supervisor}</li>
+              ))}
+            </ol>
+          </h1>
+        </div>
+      </Status>
+    );
   }
 }
 

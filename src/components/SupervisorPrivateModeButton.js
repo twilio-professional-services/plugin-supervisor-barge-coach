@@ -33,7 +33,7 @@ class SupervisorPrivateToggle extends React.Component {
    * We will toggle the private mode on/off based on the button click and the state
    * of the coachingStatusPanel along with updating the Sync Doc appropriately
    */
-  togglePrivateMode = () => {
+  togglePrivateMode = async () => {
     const { coachingStatusPanel } = this.props;
     const { coaching } = this.props;
     const { task } = this.props;
@@ -45,7 +45,7 @@ class SupervisorPrivateToggle extends React.Component {
         coachingStatusPanel: false,
       });
       // Updating the Sync Doc to reflect that we are no longer coaching and back into Monitoring
-      syncClient.initSyncDoc(
+      await syncClient.initSyncDoc(
         this.props.agentWorkerSID,
         conferenceSID,
         this.props.supervisorFN,
@@ -62,7 +62,13 @@ class SupervisorPrivateToggle extends React.Component {
        */
       if (coaching) {
         // Updating the Sync Doc to reflect that we are now coaching the agent
-        syncClient.initSyncDoc(this.props.agentWorkerSID, conferenceSID, this.props.supervisorFN, 'is Coaching', 'add');
+        await syncClient.initSyncDoc(
+          this.props.agentWorkerSID,
+          conferenceSID,
+          this.props.supervisorFN,
+          'is Coaching',
+          'add',
+        );
       }
     }
   };

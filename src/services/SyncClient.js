@@ -5,17 +5,11 @@ class SyncClient {
   #client;
 
   constructor(manager) {
-    this.#client = new TwilioSyncClient(manager);
+    this.#client = new TwilioSyncClient(manager.user.token);
 
     manager.store.getState().flex.session.loginHandler.on('tokenUpdated', () => {
       console.log('Refreshing SyncClient Token');
-
-      const { loginHandler } = manager.store.getState().flex.session;
-
-      const tokenInfo = loginHandler.getTokenInfo();
-      const accessToken = tokenInfo.token;
-
-      this.#client.updateToken(accessToken);
+      this.#client.updateToken(manager.store.getState().flex.session.getTokenInfo().token);
     });
   }
 

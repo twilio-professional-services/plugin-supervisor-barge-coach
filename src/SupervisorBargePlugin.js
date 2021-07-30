@@ -25,7 +25,7 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
    * @param flex { typeof import('@twilio/flex-ui') }
    * @param manager { import('@twilio/flex-ui').Manager }
    */
-  init(flex, manager) {
+  init = async (flex, manager) => {
     // Registering the custom reducer/redux store
     this.registerReducers(manager);
     // Add the Barge-in and Coach Option
@@ -44,32 +44,28 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
 
     /*
      * Only used for the coach feature if some reason the browser refreshes after the agent is being monitored
-     * we will lose the stickyWorker attribute that we use for agentWorkerSID (see \components\SupervisorBargeCoachButton.js for reference)
+     * we will lose the stickyWorker attribute that we use for workerSid (see \components\SupervisorBargeCoachButton.js for reference)
      * We need to invoke an action to trigger this again, so it populates the stickyWorker for us
      */
-    const agentWorkerSID = manager.store.getState().flex?.supervisor?.stickyWorker?.worker?.sid;
+    const workerSid = manager.store.getState().flex?.supervisor?.stickyWorker?.worker?.sid;
     const teamViewPath = localStorage.getItem('teamViewPath');
 
     // Check that the stickyWorker is null and that we are attempting to restore the last worker they monitored
-    if (agentWorkerSID === null && teamViewPath !== null) {
-      console.log(`${teamViewPath}`);
-
+    if (workerSid === null && teamViewPath !== null) {
       /*
        * We are parsing the prop teamViewTaskPath into an array, split it between the '/',
        * then finding which object in the array starts with WR, which is the SID we need
        */
       const arrayTeamView = teamViewPath.split('/');
       const teamViewTaskSID = arrayTeamView.filter((s) => s.includes('WR'));
-      console.log(`teamViewSID = ${teamViewTaskSID}`);
 
       // Invoke action to trigger the monitor button so we can populate the stickyWorker attribute
-      console.log(`Triggering the invokeAction`);
-      Actions.invokeAction('SelectTaskInSupervisor', { sid: teamViewTaskSID });
+      await Actions.invokeAction('SelectTaskInSupervisor', { sid: teamViewTaskSID });
 
       // If agentSyncDoc exists, clear the Agent Sync Doc to account for the refresh
       const agentSyncDoc = localStorage.getItem('agentSyncDoc');
       if (agentSyncDoc !== null) {
-        syncClient.clearSyncDoc(agentSyncDoc);
+        await syncClient.clearSyncDoc(agentSyncDoc);
       }
       /*
        * This is here if the Supervisor refreshes and has toggled alerts to false
@@ -84,12 +80,12 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
         );
       }
     }
-  }
+  };
 
   /**
    * Registers the plugin reducers
    *
-   * @param manager { Flex.Manager }
+   * @param manager { import('@twilio/flex-ui').Manager }
    */
   registerReducers(manager) {
     if (!manager.store.addReducer) {

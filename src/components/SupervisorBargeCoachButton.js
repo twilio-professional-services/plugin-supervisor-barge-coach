@@ -112,7 +112,6 @@ class SupervisorBargeCoachButton extends React.Component {
    * or clicks monitor/un-monitor multiple times, it still confirms that
    * we allow the correct worker to coach on the call
    */
-
   coachHandleClick = async () => {
     const { task } = this.props;
     const conference = task && task.conference;
@@ -150,7 +149,12 @@ class SupervisorBargeCoachButton extends React.Component {
      * If the agentParticipant.key or supervisorParticipant.key is null return, this would be rare and best practice to include this
      * before calling any function you do not want to send it null values unless your function is expecting that
      */
-    if (agentParticipant.key === null || supervisorParticipant.key === null) {
+    if (
+      agentParticipant === null ||
+      agentParticipant.key === null ||
+      supervisorParticipant === null ||
+      supervisorParticipant.key === null
+    ) {
       console.log('agentParticipant.key or supervisorParticipant.key = null, returning');
       return;
     }
