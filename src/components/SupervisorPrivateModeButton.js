@@ -4,7 +4,7 @@ import styled from 'react-emotion';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { SyncDoc } from '../services/Sync';
+import { syncClient } from '../services';
 import { Actions as BargeCoachStatusAction } from '../states/BargeCoachState';
 
 const ButtonContainer = styled('div')`
@@ -45,7 +45,13 @@ class SupervisorPrivateToggle extends React.Component {
         coachingStatusPanel: false,
       });
       // Updating the Sync Doc to reflect that we are no longer coaching and back into Monitoring
-      SyncDoc.initSyncDoc(this.props.agentWorkerSID, conferenceSID, this.props.supervisorFN, 'is Monitoring', 'remove');
+      syncClient.initSyncDoc(
+        this.props.agentWorkerSID,
+        conferenceSID,
+        this.props.supervisorFN,
+        'is Monitoring',
+        'remove',
+      );
     } else {
       this.props.setBargeCoachStatus({
         coachingStatusPanel: true,
@@ -56,7 +62,7 @@ class SupervisorPrivateToggle extends React.Component {
        */
       if (coaching) {
         // Updating the Sync Doc to reflect that we are now coaching the agent
-        SyncDoc.initSyncDoc(this.props.agentWorkerSID, conferenceSID, this.props.supervisorFN, 'is Coaching', 'add');
+        syncClient.initSyncDoc(this.props.agentWorkerSID, conferenceSID, this.props.supervisorFN, 'is Coaching', 'add');
       }
     }
   };

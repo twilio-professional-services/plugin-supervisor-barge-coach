@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { Actions as BargeCoachStatusAction } from '../states/BargeCoachState';
-import { SyncDoc } from '../services/Sync';
+import { syncClient } from '../services';
 
 const Status = styled('div')`
   font-size: 14px;
@@ -29,7 +29,7 @@ class CoachingStatusPanel extends React.Component {
      * otherwise leave it blank
      */
     const mySyncDoc = `syncDoc.${myWorkerSID}`;
-    SyncDoc.getSyncDoc(mySyncDoc).then((doc) => {
+    syncClient.getSyncDoc(mySyncDoc).then((doc) => {
       // We are subscribing to Sync Doc updates here and logging anytime that happens
       doc.on('updated', () => {
         if (doc.value.data.supervisors === null) {

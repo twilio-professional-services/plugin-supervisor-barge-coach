@@ -1,9 +1,8 @@
 import { FlexPlugin } from 'flex-plugin';
-import { Manager, Actions, VERSION } from '@twilio/flex-ui';
+import { Actions, VERSION } from '@twilio/flex-ui';
 import React from 'react';
-import { SyncClient } from 'twilio-sync';
 
-import { SyncDoc } from './services/Sync';
+import { syncClient } from './services';
 import SupervisorBargeCoachButton from './components/SupervisorBargeCoachButton';
 import CoachingStatusPanel from './components/CoachingStatusPanel';
 import SupervisorPrivateToggle from './components/SupervisorPrivateModeButton';
@@ -13,21 +12,6 @@ import { Actions as BargeCoachStatusAction } from './states/BargeCoachState';
 import './listeners/CustomListeners';
 
 const PLUGIN_NAME = 'SupervisorBargeCoachPlugin';
-
-// Generate token for the sync client
-export const SYNC_CLIENT = new SyncClient(Manager.getInstance().user.token);
-
-// Refresh sync client token
-function tokenUpdateHandler() {
-  console.log('OUTBOUND DIALPAD: Refreshing SYNC_CLIENT Token');
-
-  const { loginHandler } = Manager.getInstance().store.getState().flex.session;
-
-  const tokenInfo = loginHandler.getTokenInfo();
-  const accessToken = tokenInfo.token;
-
-  SYNC_CLIENT.updateToken(accessToken);
-}
 
 export default class SupervisorBargeCoachPlugin extends FlexPlugin {
   constructor() {
@@ -85,7 +69,7 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
       // If agentSyncDoc exists, clear the Agent Sync Doc to account for the refresh
       const agentSyncDoc = localStorage.getItem('agentSyncDoc');
       if (agentSyncDoc !== null) {
-        SyncDoc.clearSyncDoc(agentSyncDoc);
+        syncClient.clearSyncDoc(agentSyncDoc);
       }
       /*
        * This is here if the Supervisor refreshes and has toggled alerts to false
@@ -100,10 +84,7 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
         );
       }
     }
-
-    // Add listener to loginHandler to refresh token when it expires
-    manager.store.getState().flex.session.loginHandler.on('tokenUpdated', tokenUpdateHandler);
-  } // end init
+  }
 
   /**
    * Registers the plugin reducers
@@ -119,4 +100,4 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
 
     manager.store.addReducer(namespace, reducers);
   }
-} // end SupervisorBargeCoachPlugin
+}

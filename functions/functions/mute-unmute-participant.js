@@ -7,7 +7,7 @@
 
 const TokenValidator = require('twilio-flex-token-validator').functionValidator;
 
-exports.handler = TokenValidator(async (context, event, callback) => {
+exports.handler = async (context, event, callback) => {
   /*
    * '*' allows being called from any origin, this not the best security
    * practice and should only be used for testing; when builiding
@@ -26,12 +26,9 @@ exports.handler = TokenValidator(async (context, event, callback) => {
 
   console.log(`Updating participant ${participant} in conference ${conference}, toggling the mute status to ${muted}`);
 
-  const client = context.getTwilioClient();
-
-  // updating the muted status based on what is passed from the plugin
-  let participantResponse;
   try {
-    participantResponse = await client.conferences(conference).participants(participant).update({ muted });
+    const client = context.getTwilioClient();
+    const participantResponse = await client.conferences(conference).participants(participant).update({ muted });
     response.setBody({
       status: 200,
       participantResponse,
@@ -45,5 +42,6 @@ exports.handler = TokenValidator(async (context, event, callback) => {
     response.setStatusCode(error.status || 500);
   }
 
+  console.log('done');
   return callback(null, response);
-});
+};

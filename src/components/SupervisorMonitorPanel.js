@@ -4,7 +4,7 @@ import styled from 'react-emotion';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { SyncDoc } from '../services/Sync';
+import { syncClient } from '../services';
 import { Actions as BargeCoachStatusAction } from '../states/BargeCoachState';
 
 const Status = styled('div')`
@@ -42,9 +42,9 @@ class SupervisorMonitorPanel extends React.Component {
      * otherwise leave it blank
      */
     const mySyncDoc = `syncDoc.${agentWorkerSID}`;
-    SyncDoc.getSyncDoc(mySyncDoc).then((doc) => {
+    syncClient.getSyncDoc(mySyncDoc).then((doc) => {
       // We are subscribing to Sync Doc updates here and logging anytime that happens
-      doc.on('updated', (updatedDoc) => {
+      doc.on('updated', () => {
         if (doc.value.data.supervisors === null) {
           supervisorArray = [];
         } else {
