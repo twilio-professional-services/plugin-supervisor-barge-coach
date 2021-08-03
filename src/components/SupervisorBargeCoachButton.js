@@ -4,8 +4,7 @@ import styled from 'react-emotion';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import ConferenceService from '../services/ConferenceService';
-import { SyncDoc } from '../services/Sync';
+import { syncClient, conferenceClient } from '../services';
 import { Actions as BargeCoachStatusAction } from '../states/BargeCoachState';
 
 const ButtonContainer = styled('div')`
@@ -42,7 +41,7 @@ class SupervisorBargeCoachButton extends React.Component {
    * or clicks monitor/un-monitor multiple times, it still confirms that
    * we allow the correct user to barge-in on the call
    */
-  bargeHandleClick = () => {
+  bargeHandleClick = async () => {
     const { task } = this.props;
     const conference = task && task.conference;
     const conferenceSID = conference && conference.conferenceSid;
@@ -63,7 +62,7 @@ class SupervisorBargeCoachButton extends React.Component {
         p.value.status === 'joined' &&
         this.props.myWorkerSID === p.value.worker_sid,
     );
-    console.log(`Current supervisorSID = ${supervisorParticipant.key}`);
+    console.log(`Current supervisorSID = ${supervisorParticipant.key} ${muted}`);
 
     /*
      * If the supervisorParticipant.key is null return, this would be rare and best practice to include this
@@ -78,7 +77,7 @@ class SupervisorBargeCoachButton extends React.Component {
      * Also account for coach status to enable/disable barge as we call this when clicking the mute/unmute button
      */
     if (muted) {
-      ConferenceService.unmuteParticipant(conferenceSID, supervisorParticipant.key);
+      await conferenceClient.unmuteParticipant(conferenceSID, supervisorParticipant.key);
       if (coaching) {
         this.props.setBargeCoachStatus({
           muted: false,
@@ -91,7 +90,7 @@ class SupervisorBargeCoachButton extends React.Component {
         });
       }
     } else {
-      ConferenceService.muteParticipant(conferenceSID, supervisorParticipant.key);
+      await conferenceClient.muteParticipant(conferenceSID, supervisorParticipant.key);
       if (coaching) {
         this.props.setBargeCoachStatus({
           muted: true,
@@ -113,8 +112,7 @@ class SupervisorBargeCoachButton extends React.Component {
    * or clicks monitor/un-monitor multiple times, it still confirms that
    * we allow the correct worker to coach on the call
    */
-
-  coachHandleClick = () => {
+  coachHandleClick = async () => {
     const { task } = this.props;
     const conference = task && task.conference;
     const conferenceSID = conference && conference.conferenceSid;
@@ -151,22 +149,33 @@ class SupervisorBargeCoachButton extends React.Component {
      * If the agentParticipant.key or supervisorParticipant.key is null return, this would be rare and best practice to include this
      * before calling any function you do not want to send it null values unless your function is expecting that
      */
-    if (agentParticipant.key === null || supervisorParticipant.key === null) {
+    if (
+      agentParticipant === null ||
+      agentParticipant.key === null ||
+      supervisorParticipant === null ||
+      supervisorParticipant.key === null
+    ) {
       console.log('agentParticipant.key or supervisorParticipant.key = null, returning');
       return;
     }
     // Coaching will "enable" their line if they are disabled, else "disable" their line if they are enabled
     if (coaching) {
-      ConferenceService.disableCoaching(conferenceSID, supervisorParticipant.key, agentParticipant.key);
+      await conferenceClient.disableCoaching(conferenceSID, supervisorParticipant.key, agentParticipant.key);
       this.props.setBargeCoachStatus({
         coaching: false,
         muted: true,
         barge: false,
       });
       // Updating the Sync Doc to reflect that we are no longer coaching and back into Monitoring
-      SyncDoc.initSyncDoc(this.props.agentWorkerSID, conferenceSID, this.props.supervisorFN, 'is Monitoring', 'remove');
+      await syncClient.initSyncDoc(
+        this.props.agentWorkerSID,
+        conferenceSID,
+        this.props.supervisorFN,
+        'is Monitoring',
+        'remove',
+      );
     } else {
-      ConferenceService.enableCoaching(conferenceSID, supervisorParticipant.key, agentParticipant.key);
+      await conferenceClient.enableCoaching(conferenceSID, supervisorParticipant.key, agentParticipant.key);
       this.props.setBargeCoachStatus({
         coaching: true,
         muted: false,
@@ -180,7 +189,13 @@ class SupervisorBargeCoachButton extends React.Component {
       const { coachingStatusPanel } = this.props;
       if (coachingStatusPanel) {
         // Updating the Sync Doc to reflect that we are now coaching the agent
-        SyncDoc.initSyncDoc(this.props.agentWorkerSID, conferenceSID, this.props.supervisorFN, 'is Coaching', 'add');
+        await syncClient.initSyncDoc(
+          this.props.agentWorkerSID,
+          conferenceSID,
+          this.props.supervisorFN,
+          'is Coaching',
+          'add',
+        );
       }
     }
   };

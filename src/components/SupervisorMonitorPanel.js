@@ -4,8 +4,8 @@ import styled from 'react-emotion';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { SyncDoc } from '../services/Sync';
 import { Actions as BargeCoachStatusAction } from '../states/BargeCoachState';
+import AbstractPanel from './AbstractPanel';
 
 const Status = styled('div')`
   font-size: 14px;
@@ -18,69 +18,43 @@ const Status = styled('div')`
   text-align: left;
 `;
 
-class SupervisorMonitorPanel extends React.Component {
-  supervisorArray() {
-    return this.props.supervisorArray.map((supervisorArray) => (
-      <tr key={supervisorArray.supervisor}>
-        <td>{supervisorArray.supervisor}</td>
-        <td style={{ color: 'green' }}>&nbsp;{supervisorArray.status}</td>
-      </tr>
-    ));
-  }
+class SupervisorMonitorPanel extends AbstractPanel {
+  componentDidUpdate = async () => {
+    // Setup the listener if it hasn't already and we have an agentSid
+    if (!this.doc && this.props.agentWorkerSID) {
+      await this.setupListener(`syncDoc.${this.props.agentWorkerSID}`);
+    }
+  };
 
   render() {
-    /*
-     * If the supervisor array has value in it, that means someone is coaching
-     * We will map each of the supervisors that may be actively coaching
-     * Otherwise we will not display anything if no one is actively coaching
-     */
-    const { agentWorkerSID } = this.props;
-    let { supervisorArray } = this.props;
-    /*
-     * Let's subscribe to the sync doc as an agent/work and check
-     * if we are being coached, if we are, render that in the UI
-     * otherwise leave it blank
-     */
-    const mySyncDoc = `syncDoc.${agentWorkerSID}`;
-    SyncDoc.getSyncDoc(mySyncDoc).then((doc) => {
-      // We are subscribing to Sync Doc updates here and logging anytime that happens
-      doc.on('updated', (updatedDoc) => {
-        if (doc.value.data.supervisors === null) {
-          supervisorArray = [];
-        } else {
-          supervisorArray = [...doc.value.data.supervisors];
-        }
-
-        // Set Supervisor's name that is coaching into props
-        this.props.setBargeCoachStatus({
-          supervisorArray,
-        });
-      });
-    });
-
-    if (this.props.supervisorArray.length !== 0) {
-      return (
-        <Status>
-          <div>
-            <h1 id="title" fontWeight="bold">
-              Active Supervisors:
-            </h1>
-            <table id="supervisors">
-              <tbody>{this.supervisorArray()}</tbody>
-            </table>
-          </div>
-        </Status>
-      );
-    }
     return (
       <Status>
         <div>
           <h1 id="title" fontWeight="bold">
             Active Supervisors:
           </h1>
-          None
+          {this.renderSupervisors()}
         </div>
       </Status>
+    );
+  }
+
+  renderSupervisors() {
+    if (this.props.supervisorArray.length === 0) {
+      return 'None';
+    }
+
+    return (
+      <table id="supervisors">
+        <tbody>
+          {this.props.supervisorArray.map((supervisorArray) => (
+            <tr key={supervisorArray.supervisor}>
+              <td>{supervisorArray.supervisor}</td>
+              <td style={{ color: 'green' }}>&nbsp;{supervisorArray.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     );
   }
 }
