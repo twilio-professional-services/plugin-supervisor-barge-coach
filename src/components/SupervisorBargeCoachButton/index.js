@@ -14,7 +14,7 @@ import SupervisorBargeCoachButton from './SupervisorBargeCoachButton.Component';
 const mapStateToProps = (state) => {
   const myWorkerSID = state?.flex?.worker?.worker?.sid;
   const agentWorkerSID = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
-  const supervisorFN = state?.flex?.worker?.attributes?.full_name;
+  const supervisorFullName = state?.flex?.worker?.attributes?.full_name;
   logger.log(`sticky worker = ${agentWorkerSID}`);
 
   /*
@@ -44,7 +44,7 @@ const mapStateToProps = (state) => {
   return {
     myWorkerSID,
     agentWorkerSID,
-    supervisorFN,
+    supervisorFullName,
     muted,
     barge,
     enableBargeinButton,

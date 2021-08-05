@@ -28,16 +28,16 @@ class SyncClient {
    * We will adjust the array and eventually pass this into the updateSyncDoc function to update the Sync Doc with the new array
    * @param workerSid
    * @param conferenceSid
-   * @param supervisorFN
+   * @param supervisorFullName
    * @param supervisorStatus
    * @param updateStatus
    * @return {Promise<void>}
    */
-  initSyncDoc = async (workerSid, conferenceSid, supervisorFN, supervisorStatus, updateStatus) => {
+  initSyncDoc = async (workerSid, conferenceSid, supervisorFullName, supervisorStatus, updateStatus) => {
     const docName = `syncDoc.${workerSid}`;
     const doc = await this.getSyncDoc(docName);
     logger.log(
-      `Updating (${updateStatus}) doc ${docName} with supervisors ${supervisorFN} (${supervisorStatus}) on conference ${conferenceSid}`,
+      `Updating (${updateStatus}) doc ${docName} with supervisors ${supervisorFullName} (${supervisorStatus}) on conference ${conferenceSid}`,
     );
     /*
      * Getting the latest Sync Doc agent list and storing in an array
@@ -58,7 +58,7 @@ class SyncClient {
     if (updateStatus === 'add') {
       supervisorList.push({
         conference: conferenceSid,
-        supervisor: supervisorFN,
+        supervisor: supervisorFullName,
         status: supervisorStatus,
       });
       // Update the Sync Doc with the new supervisorList
@@ -72,7 +72,7 @@ class SyncClient {
      */
     if (updateStatus === 'remove') {
       // Get the index of the Supervisor we need to remove in the array
-      const removeSupervisorIndex = supervisorList.findIndex((s) => s.supervisor === supervisorFN);
+      const removeSupervisorIndex = supervisorList.findIndex((s) => s.supervisor === supervisorFullName);
       // Ensure we get something back, let's splice this index where the Supervisor is within the array
       if (removeSupervisorIndex > -1) {
         supervisorList.splice(removeSupervisorIndex, 1);

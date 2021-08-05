@@ -24,7 +24,7 @@ export default class SupervisorPrivateModeButtonComponent extends React.Componen
       await syncClient.initSyncDoc(
         this.props.agentWorkerSID,
         conferenceSID,
-        this.props.supervisorFN,
+        this.props.supervisorFullName,
         'is Monitoring',
         'remove',
       );
@@ -41,7 +41,7 @@ export default class SupervisorPrivateModeButtonComponent extends React.Componen
         await syncClient.initSyncDoc(
           this.props.agentWorkerSID,
           conferenceSID,
-          this.props.supervisorFN,
+          this.props.supervisorFullName,
           'is Coaching',
           'add',
         );

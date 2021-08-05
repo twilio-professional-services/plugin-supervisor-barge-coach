@@ -115,7 +115,7 @@ export default class SupervisorBargeCoachButton extends React.Component {
    * Disables coaching
    */
   #disableCoaching = async () => {
-    const { agentWorkerSID, supervisorFN } = this.props;
+    const { agentWorkerSID, supervisorFullName } = this.props;
     const { supervisorParticipant, agentParticipant, conferenceSid } = this;
 
     await conferenceClient.disableCoaching(conferenceSid, supervisorParticipant.key, agentParticipant.key);
@@ -125,14 +125,14 @@ export default class SupervisorBargeCoachButton extends React.Component {
       barge: false,
     });
     // Updating the Sync Doc to reflect that we are no longer coaching and back into Monitoring
-    await syncClient.initSyncDoc(agentWorkerSID, conferenceSid, supervisorFN, 'is Monitoring', 'remove');
+    await syncClient.initSyncDoc(agentWorkerSID, conferenceSid, supervisorFullName, 'is Monitoring', 'remove');
   };
 
   /**
    * Enables coaching
    */
   #enableCoaching = async () => {
-    const { agentWorkerSID, supervisorFN } = this.props;
+    const { agentWorkerSID, supervisorFullName } = this.props;
     const { supervisorParticipant, agentParticipant, conferenceSid } = this;
 
     await conferenceClient.enableCoaching(conferenceSid, supervisorParticipant.key, agentParticipant.key);
@@ -145,7 +145,7 @@ export default class SupervisorBargeCoachButton extends React.Component {
     // If coachingStatusPanel is true (enabled), proceed otherwise we will need to subscribe to the Sync Doc
     if (this.props.coachingStatusPanel) {
       // Updating the Sync Doc to reflect that we are now coaching the agent
-      await syncClient.initSyncDoc(agentWorkerSID, conferenceSid, supervisorFN, 'is Coaching', 'add');
+      await syncClient.initSyncDoc(agentWorkerSID, conferenceSid, supervisorFullName, 'is Coaching', 'add');
     }
   };
 

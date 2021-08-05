@@ -8,7 +8,7 @@ import SupervisorMonitorPanel from './SupervisorMonitorPanel.Component';
 
 const mapStateToProps = (state) => {
   const agentWorkerSID = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
-  const supervisorFN = state?.flex?.worker?.attributes?.full_name;
+  const supervisorFullName = state?.flex?.worker?.attributes?.full_name;
 
   /*
    * Also pulling back the states from the redux store as we will use those later
@@ -19,7 +19,7 @@ const mapStateToProps = (state) => {
 
   return {
     agentWorkerSID,
-    supervisorFN,
+    supervisorFullName,
     supervisorArray,
   };
 };

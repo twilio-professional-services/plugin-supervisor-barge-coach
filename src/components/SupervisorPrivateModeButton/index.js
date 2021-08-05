@@ -8,7 +8,7 @@ import SupervisorPrivateModeButtonComponent from './SupervisorPrivateModeButton.
 
 const mapStateToProps = (state) => {
   const agentWorkerSID = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
-  const supervisorFN = state?.flex?.worker?.attributes?.full_name;
+  const supervisorFullName = state?.flex?.worker?.attributes?.full_name;
 
   const customReduxStore = state?.['barge-coach'].bargecoach;
   const { coaching } = customReduxStore;
@@ -22,7 +22,7 @@ const mapStateToProps = (state) => {
 
   return {
     agentWorkerSID,
-    supervisorFN,
+    supervisorFullName,
     coaching,
     coachingStatusPanel,
   };
