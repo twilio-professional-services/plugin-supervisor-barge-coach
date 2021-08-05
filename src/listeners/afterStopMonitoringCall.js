@@ -29,7 +29,7 @@ export default function afterStopMonitoringCall(manager) {
     /*
      * Sending the agentSid so we know which Sync Doc to update, the Supervisor's Full Name, and the remove status
      * We don't care about the second or forth section in here as we are removing the Supervisor in this case
-     * Typically we would pass in the conferenceSID and what the supervisor is doing (see SupervisorBargeCoachButton.js if you wish to see that in use)
+     * Typically we would pass in the conferenceSID and what the supervisor is doing (see SupervisorBargeCoachButton.Component.js if you wish to see that in use)
      */
     await syncClient.initSyncDoc(agentSid, '', supervisorFN, '', 'remove');
   });

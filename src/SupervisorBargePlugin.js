@@ -3,9 +3,8 @@ import { Actions, VERSION } from '@twilio/flex-ui';
 import React from 'react';
 
 import { localCacheClient, syncClient } from './services';
-import SupervisorBargeCoachButton from './components/SupervisorBargeCoachButton';
 import CoachingStatusPanel from './components/CoachingStatusPanel';
-import { SupervisorPrivateModeButton } from './components';
+import { SupervisorPrivateModeButton, SupervisorBargeCoachButton } from './components';
 import SupervisorMonitorPanel from './components/SupervisorMonitorPanel';
 import reducers, { namespace } from './states';
 import { Actions as BargeCoachStatusAction, initialState } from './states/BargeCoachState';
@@ -100,7 +99,7 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
   async hydrateInitialState(manager) {
     /*
      * Only used for the coach feature if some reason the browser refreshes after the agent is being monitored
-     * we will lose the stickyWorker attribute that we use for workerSid (see \components\SupervisorBargeCoachButton.js for reference)
+     * we will lose the stickyWorker attribute that we use for workerSid (see \components\SupervisorBargeCoachButton.Component.js for reference)
      * We need to invoke an action to trigger this again, so it populates the stickyWorker for us
      */
     const workerSid = manager.store.getState().flex?.supervisor?.stickyWorker?.worker?.sid;
