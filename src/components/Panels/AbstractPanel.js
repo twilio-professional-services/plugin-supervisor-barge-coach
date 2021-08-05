@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { syncClient } from '../services';
+import { syncClient } from '../../services';
 
 export default class AbstractPanel extends React.Component {
   doc = null;

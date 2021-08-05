@@ -3,9 +3,12 @@ import { Actions, VERSION } from '@twilio/flex-ui';
 import React from 'react';
 
 import { localCacheClient, syncClient } from './services';
-import CoachingStatusPanel from './components/CoachingStatusPanel';
-import { SupervisorPrivateModeButton, SupervisorBargeCoachButton } from './components';
-import SupervisorMonitorPanel from './components/SupervisorMonitorPanel';
+import {
+  SupervisorPrivateModeButton,
+  SupervisorBargeCoachButton,
+  CoachingStatusPanel,
+  SupervisorMonitorPanel,
+} from './components';
 import reducers, { namespace } from './states';
 import { Actions as BargeCoachStatusAction, initialState } from './states/BargeCoachState';
 import { logger } from './utils';
