@@ -15,9 +15,7 @@ export default class SupervisorMonitorPanel extends AbstractPanel {
     return (
       <Status>
         <div>
-          <h1 id="title" fontWeight="bold">
-            Active Supervisors:
-          </h1>
+          <h1 id="title">Active Supervisors:</h1>
           {this.renderSupervisors()}
         </div>
       </Status>

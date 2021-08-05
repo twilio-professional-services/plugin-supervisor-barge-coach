@@ -7,6 +7,40 @@ import { ButtonContainer, buttonStyle, buttonStyleActive } from './SupervisorBar
 
 export default class SupervisorBargeCoachButton extends React.Component {
   /*
+   * Checking the conference within the task for a participant with the value "supervisor",
+   * is their status "joined", reason for this is every time you click monitor/unmonitor on a call
+   * it creates an additional participant, the previous status will show as "left", we only want the active supervisor,
+   * and finally we want to ensure that the supervisor that is joined also matches their worker_sid
+   * which we pull from mapStateToProps at the bottom of this js file
+   */
+  get supervisorParticipant() {
+    const { muted, myWorkerSID } = this.props;
+    const children = this.props.task?.conference?.source?.children || [];
+    const participant = children.find(
+      (p) =>
+        p.value.participant_type === 'supervisor' && p.value.status === 'joined' && myWorkerSID === p.value.worker_sid,
+    );
+    logger.log(`Current supervisorSid is ${participant?.key} with status ${muted}`);
+
+    return participant;
+  }
+
+  /*
+   * Pulling the agentSID that we will be coaching on this conference
+   * Ensuring they are a worker (IE agent) and it matches the agentWorkerSID we pulled from the props
+   */
+  get agentParticipant() {
+    const children = this.props.task?.conference?.source?.children || [];
+    const participant = children.find(
+      (p) => p.value.participant_type === 'worker' && this.props.agentWorkerSID === p.value.worker_sid,
+    );
+
+    logger.log(`Current agentWorkerSid is ${participant?.key}`);
+
+    return participant;
+  }
+
+  /*
    * On click we will be pulling the conference SID and supervisorSID
    * to trigger Mute / Unmute respectively for that user - muted comes from the redux store
    * We've built in resiliency if the supervisor refreshes their browser
@@ -14,36 +48,20 @@ export default class SupervisorBargeCoachButton extends React.Component {
    * we allow the correct user to barge-in on the call
    */
   bargeHandleClick = async () => {
+    logger.log('Handling Barge button toggle');
+
     const { task } = this.props;
     const conference = task && task.conference;
     const conferenceSID = conference && conference.conferenceSid;
     const { muted } = this.props;
-    const conferenceChildren = conference?.source?.children || [];
     const { coaching } = this.props;
 
-    /*
-     * Checking the conference within the task for a participant with the value "supervisor",
-     * is their status "joined", reason for this is every time you click monitor/unmonitor on a call
-     * it creates an additional participant, the previous status will show as "left", we only want the active supervisor,
-     * and finally we want to ensure that the supervisor that is joined also matches their worker_sid
-     * which we pull from mapStateToProps at the bottom of this js file
-     */
-    const supervisorParticipant = conferenceChildren.find(
-      (p) =>
-        p.value.participant_type === 'supervisor' &&
-        p.value.status === 'joined' &&
-        this.props.myWorkerSID === p.value.worker_sid,
-    );
-    logger.log(`Current supervisorSID = ${supervisorParticipant.key} ${muted}`);
-
-    /*
-     * If the supervisorParticipant.key is null return, this would be rare and best practice to include this
-     * before calling any function you do not want to send it null values unless your function is expecting that
-     */
-    if (supervisorParticipant.key === null) {
-      logger.log('supervisorParticipant.key = null, returning');
+    const { supervisorParticipant } = this;
+    if (supervisorParticipant?.key === null) {
+      logger.log('supervisorParticipant is null, skipping bargeHandleClick');
       return;
     }
+
     /*
      * Barge-in will "unmute" their line if the are muted, else "mute" their line if they are unmuted
      * Also account for coach status to enable/disable barge as we call this when clicking the mute/unmute button
@@ -85,69 +103,35 @@ export default class SupervisorBargeCoachButton extends React.Component {
    * we allow the correct worker to coach on the call
    */
   coachHandleClick = async () => {
-    const { task } = this.props;
-    const conference = task && task.conference;
-    const conferenceSID = conference && conference.conferenceSid;
-    const { coaching } = this.props;
-    const conferenceChildren = conference?.source?.children || [];
+    logger.log('Handling Coach button toggle');
 
-    /*
-     * Checking the conference within the task for a participant with the value "supervisor",
-     * is their status "joined", reason for this is every time you click monitor/unmonitor on a call
-     * it creates an additional participant, the previous status will show as "left", we only want the active supervisor,
-     * and finally we want to ensure that the supervisor that is joined also matches their worker_sid
-     * which we pull from mapStateToProps at the bottom of this js file
-     */
-    const supervisorParticipant = conferenceChildren.find(
-      (p) =>
-        p.value.participant_type === 'supervisor' &&
-        p.value.status === 'joined' &&
-        this.props.myWorkerSID === p.value.worker_sid,
-    );
-    logger.log(`Current supervisorSID = ${supervisorParticipant.key}`);
+    const conferenceSid = this.props.task?.conference?.conferenceSid;
+    const { coaching, agentWorkerSID, supervisorFN } = this.props;
 
-    /*
-     * Pulling the agentSID that we will be coaching on this conference
-     * Ensuring they are a worker (IE agent) and it matches the agentWorkerSID we pulled from the props
-     */
-    const agentParticipant = conferenceChildren.find(
-      (p) => p.value.participant_type === 'worker' && this.props.agentWorkerSID === p.value.worker_sid,
-    );
-
-    logger.log(`Current agentWorkerSID = ${this.props.agentWorkerSID}`);
-    logger.log(`Current agentSID = ${agentParticipant?.key}`);
-
-    /*
-     * If the agentParticipant.key or supervisorParticipant.key is null return, this would be rare and best practice to include this
-     * before calling any function you do not want to send it null values unless your function is expecting that
-     */
-    if (
-      !agentParticipant ||
-      !supervisorParticipant ||
-      agentParticipant.key === null ||
-      supervisorParticipant.key === null
-    ) {
-      logger.log('agentParticipant.key or supervisorParticipant.key = null, returning');
+    const { supervisorParticipant, agentParticipant } = this;
+    if (supervisorParticipant?.key === null) {
+      logger.log('supervisorParticipant is null, skipping coachHandleClick');
       return;
     }
+    if (agentParticipant?.key === null) {
+      logger.log('supervisorParticipant is null, skipping coachHandleClick');
+      return;
+    }
+
+    logger.log(`Current workerSid = ${agentWorkerSID}`);
+
     // Coaching will "enable" their line if they are disabled, else "disable" their line if they are enabled
     if (coaching) {
-      await conferenceClient.disableCoaching(conferenceSID, supervisorParticipant.key, agentParticipant.key);
+      await conferenceClient.disableCoaching(conferenceSid, supervisorParticipant.key, agentParticipant.key);
       this.props.setBargeCoachStatus({
         coaching: false,
         muted: true,
         barge: false,
       });
       // Updating the Sync Doc to reflect that we are no longer coaching and back into Monitoring
-      await syncClient.initSyncDoc(
-        this.props.agentWorkerSID,
-        conferenceSID,
-        this.props.supervisorFN,
-        'is Monitoring',
-        'remove',
-      );
+      await syncClient.initSyncDoc(agentWorkerSID, conferenceSid, supervisorFN, 'is Monitoring', 'remove');
     } else {
-      await conferenceClient.enableCoaching(conferenceSID, supervisorParticipant.key, agentParticipant.key);
+      await conferenceClient.enableCoaching(conferenceSid, supervisorParticipant.key, agentParticipant.key);
       this.props.setBargeCoachStatus({
         coaching: true,
         muted: false,
@@ -158,16 +142,9 @@ export default class SupervisorBargeCoachButton extends React.Component {
        * If coachingStatusPanel is true (enabled), proceed
        * otherwise we will not subscribe to the Sync Doc
        */
-      const { coachingStatusPanel } = this.props;
-      if (coachingStatusPanel) {
+      if (this.props.coachingStatusPanel) {
         // Updating the Sync Doc to reflect that we are now coaching the agent
-        await syncClient.initSyncDoc(
-          this.props.agentWorkerSID,
-          conferenceSID,
-          this.props.supervisorFN,
-          'is Coaching',
-          'add',
-        );
+        await syncClient.initSyncDoc(agentWorkerSID, conferenceSid, supervisorFN, 'is Coaching', 'add');
       }
     }
   };
@@ -177,13 +154,8 @@ export default class SupervisorBargeCoachButton extends React.Component {
    * if the supervisor isn't monitoring the call, toggle the icon based on coach and barge-in status
    */
   render() {
-    const { muted } = this.props;
-    const { barge } = this.props;
-    const { enableBargeinButton } = this.props;
-    const { coaching } = this.props;
-    const { enableCoachButton } = this.props;
-
-    const isLiveCall = TaskHelper.isLiveCall(this.props.task);
+    const { muted, barge, enableBargeinButton, coaching, enableCoachButton, task } = this.props;
+    const isLiveCall = TaskHelper.isLiveCall(task);
 
     return (
       <ButtonContainer>
