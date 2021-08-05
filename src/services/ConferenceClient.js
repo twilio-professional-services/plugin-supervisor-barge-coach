@@ -1,5 +1,7 @@
 import { Manager } from '@twilio/flex-ui';
 
+import { logger } from '../utils';
+
 class ConferenceClient {
   #manager;
 
@@ -41,7 +43,7 @@ class ConferenceClient {
       participant: participantSid,
       muted,
     });
-    console.log(`${muted ? 'Muting' : 'Unmuting'} successful for participant`, participantSid);
+    logger.log(`${muted ? 'Muting' : 'Unmuting'} successful for participant`, participantSid);
   };
 
   /*
@@ -50,7 +52,7 @@ class ConferenceClient {
    * flip them from disable/enable coaching respectively when clicking the button
    */
   #toggleParticipantCoaching = async (conference, participantSid, muted, coaching, agentSid) => {
-    console.log(
+    logger.log(
       `Passing conference: ${conference}, supervisor: ${participantSid}, and agent: ${agentSid} to the coaching Twilio function as ${coaching}`,
     );
 
@@ -62,7 +64,7 @@ class ConferenceClient {
       agentSid,
     });
 
-    console.log(`${coaching ? 'Enabling Coach' : 'Disabling Coach'} successful for participant`, participantSid);
+    logger.log(`${coaching ? 'Enabling Coach' : 'Disabling Coach'} successful for participant`, participantSid);
   };
 
   // Calling to toggle mute status to true (mute)

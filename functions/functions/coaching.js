@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
  * Using the TokenValidator to authenticate so we can query the API
  * We could do this directly from the plugin, but that requires us to provide

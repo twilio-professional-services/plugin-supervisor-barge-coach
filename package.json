@@ -6,7 +6,8 @@
     "postinstall": "flex-plugin pre-script-check",
     "lint": "eslint --ext js src/ functions/functions/",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "start": "cd functions && yarn st"
   },
   "dependencies": {
     "@emotion/core": "^10.0.28",

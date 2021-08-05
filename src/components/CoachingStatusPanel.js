@@ -64,8 +64,7 @@ const mapStateToProps = (state) => {
    * Also pulling back the states from the redux store as we will use those later
    * to manipulate the buttons
    */
-  const customReduxStore = state?.['barge-coach'].bargecoach;
-  const { supervisorArray } = customReduxStore;
+  const { supervisorArray } = state?.['barge-coach'].bargecoach;
 
   return {
     myWorkerSID,

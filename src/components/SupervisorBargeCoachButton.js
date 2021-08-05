@@ -4,8 +4,9 @@ import styled from 'react-emotion';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { syncClient, conferenceClient } from '../services';
+import { syncClient, conferenceClient, localCacheClient } from '../services';
 import { Actions as BargeCoachStatusAction } from '../states/BargeCoachState';
+import { logger } from '../utils';
 
 const ButtonContainer = styled('div')`
   display: flex;
@@ -62,14 +63,14 @@ class SupervisorBargeCoachButton extends React.Component {
         p.value.status === 'joined' &&
         this.props.myWorkerSID === p.value.worker_sid,
     );
-    console.log(`Current supervisorSID = ${supervisorParticipant.key} ${muted}`);
+    logger.log(`Current supervisorSID = ${supervisorParticipant.key} ${muted}`);
 
     /*
      * If the supervisorParticipant.key is null return, this would be rare and best practice to include this
      * before calling any function you do not want to send it null values unless your function is expecting that
      */
     if (supervisorParticipant.key === null) {
-      console.log('supervisorParticipant.key = null, returning');
+      logger.log('supervisorParticipant.key = null, returning');
       return;
     }
     /*
@@ -132,7 +133,7 @@ class SupervisorBargeCoachButton extends React.Component {
         p.value.status === 'joined' &&
         this.props.myWorkerSID === p.value.worker_sid,
     );
-    console.log(`Current supervisorSID = ${supervisorParticipant.key}`);
+    logger.log(`Current supervisorSID = ${supervisorParticipant.key}`);
 
     /*
      * Pulling the agentSID that we will be coaching on this conference
@@ -142,20 +143,20 @@ class SupervisorBargeCoachButton extends React.Component {
       (p) => p.value.participant_type === 'worker' && this.props.agentWorkerSID === p.value.worker_sid,
     );
 
-    console.log(`Current agentWorkerSID = ${this.props.agentWorkerSID}`);
-    console.log(`Current agentSID = ${agentParticipant?.key}`);
+    logger.log(`Current agentWorkerSID = ${this.props.agentWorkerSID}`);
+    logger.log(`Current agentSID = ${agentParticipant?.key}`);
 
     /*
      * If the agentParticipant.key or supervisorParticipant.key is null return, this would be rare and best practice to include this
      * before calling any function you do not want to send it null values unless your function is expecting that
      */
     if (
-      agentParticipant === null ||
+      !agentParticipant ||
+      !supervisorParticipant ||
       agentParticipant.key === null ||
-      supervisorParticipant === null ||
       supervisorParticipant.key === null
     ) {
-      console.log('agentParticipant.key or supervisorParticipant.key = null, returning');
+      logger.log('agentParticipant.key or supervisorParticipant.key = null, returning');
       return;
     }
     // Coaching will "enable" their line if they are disabled, else "disable" their line if they are enabled
@@ -252,7 +253,7 @@ const mapStateToProps = (state) => {
   const myWorkerSID = state?.flex?.worker?.worker?.sid;
   const agentWorkerSID = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
   const supervisorFN = state?.flex?.worker?.attributes?.full_name;
-  console.log(`sticky worker = ${agentWorkerSID}`);
+  logger.log(`sticky worker = ${agentWorkerSID}`);
 
   /*
    * Also pulling back the states from the redux store as we will use those later
@@ -274,11 +275,8 @@ const mapStateToProps = (state) => {
    * and clear the Agent's Sync Doc
    */
   if (teamViewPath !== null) {
-    console.log('Storing teamViewPath to cache');
-    localStorage.setItem('teamViewPath', teamViewPath);
-
-    console.log('Storing agentSyncDoc to cache');
-    localStorage.setItem('agentSyncDoc', `syncDoc.${agentWorkerSID}`);
+    localCacheClient.setTeamViewPath(teamViewPath);
+    localCacheClient.setAgentSyncDoc(`syncDoc.${agentWorkerSID}`);
   }
 
   return {

@@ -1,6 +1,8 @@
 import { Manager } from '@twilio/flex-ui';
 import { SyncClient as TwilioSyncClient } from 'twilio-sync';
 
+import { logger } from '../utils';
+
 class SyncClient {
   #client;
 
@@ -8,7 +10,7 @@ class SyncClient {
     this.#client = new TwilioSyncClient(manager.user.token);
 
     manager.store.getState().flex.session.loginHandler.on('tokenUpdated', () => {
-      console.log('Refreshing SyncClient Token');
+      logger.log('Refreshing SyncClient Token');
       this.#client.updateToken(manager.store.getState().flex.session.getTokenInfo().token);
     });
   }
@@ -34,7 +36,7 @@ class SyncClient {
   initSyncDoc = async (workerSid, conferenceSid, supervisorFN, supervisorStatus, updateStatus) => {
     const docName = `syncDoc.${workerSid}`;
     const doc = await this.getSyncDoc(docName);
-    console.log(
+    logger.log(
       `Updating (${updateStatus}) doc ${docName} with supervisors ${supervisorFN} (${supervisorStatus}) on conference ${conferenceSid}`,
     );
     /*

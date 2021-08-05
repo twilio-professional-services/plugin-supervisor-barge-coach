@@ -1,34 +1,10 @@
 import * as React from 'react';
-import { IconButton, TaskHelper, withTheme } from '@twilio/flex-ui';
-import styled from 'react-emotion';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { IconButton, TaskHelper } from '@twilio/flex-ui';
 
-import { localCacheClient, syncClient } from '../services';
-import { Actions as BargeCoachStatusAction } from '../states/BargeCoachState';
+import { syncClient } from '../../services';
+import { ButtonContainer, buttonStyle, buttonStyleActive } from './SupervisorPrivateModeButton.Style';
 
-const ButtonContainer = styled('div')`
-  display: flex;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  align-items: center;
-  text-align: center;
-  justify-content: center;
-`;
-
-const buttonStyleActive = {
-  marginLeft: '6px',
-  marginRight: '6px',
-  color: 'forestgreen',
-};
-
-const buttonStyle = {
-  marginLeft: '6px',
-  marginRight: '6px',
-};
-
-class SupervisorPrivateToggle extends React.Component {
+export default class SupervisorPrivateModeButtonComponent extends React.Component {
   /*
    * We will toggle the private mode on/off based on the button click and the state
    * of the coachingStatusPanel along with updating the Sync Doc appropriately
@@ -97,36 +73,3 @@ class SupervisorPrivateToggle extends React.Component {
     );
   }
 }
-
-// Mapping the agent's sid, supervisor full name, and coachingStatusPanel flag within the custom redux store/state
-const mapStateToProps = (state) => {
-  const agentWorkerSID = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
-  const supervisorFN = state?.flex?.worker?.attributes?.full_name;
-
-  const customReduxStore = state?.['barge-coach'].bargecoach;
-  const { coaching } = customReduxStore;
-  const { coachingStatusPanel } = customReduxStore;
-
-  /*
-   * Storing the coachingStatusPanel value that will be used in SupervisorBargePlugin.js
-   * If the supervisor refreshes, we want to remember their preference
-   */
-  localCacheClient.setPrivateToggle(coachingStatusPanel);
-
-  return {
-    agentWorkerSID,
-    supervisorFN,
-    coaching,
-    coachingStatusPanel,
-  };
-};
-
-/*
- * Mapping dispatch to props as I will leverage the setBargeCoachStatus
- * to change the properties on the redux store, referenced above with this.props.setBargeCoachStatus
- */
-const mapDispatchToProps = (dispatch) => ({
-  setBargeCoachStatus: bindActionCreators(BargeCoachStatusAction.setBargeCoachStatus, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(withTheme(SupervisorPrivateToggle));

@@ -30,6 +30,9 @@ export default class AbstractPanel extends React.Component {
     this.doc.on('updated', this.#onDocUpdated);
   };
 
+  /**
+   * Unregister event listeners upon dismounting
+   */
   componentWillUnmount() {
     if (this.doc) {
       this.doc.off('updated', this.#onDocUpdated);
