@@ -7,7 +7,7 @@ import CoachingStatusPanel from './CoachingStatusPanel.Component';
 
 // Mapping the the logged in user sid so we can snag the Sync Doc
 const mapStateToProps = (state) => {
-  const myWorkerSID = state?.flex?.worker?.worker?.sid;
+  const myWorkerSid = state?.flex?.worker?.worker?.sid;
 
   /*
    * Also pulling back the states from the redux store as we will use those later
@@ -16,7 +16,7 @@ const mapStateToProps = (state) => {
   const { supervisorArray } = state?.['barge-coach'].bargecoach;
 
   return {
-    myWorkerSID,
+    myWorkerSid,
     supervisorArray,
   };
 };

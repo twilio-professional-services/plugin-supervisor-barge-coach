@@ -14,12 +14,12 @@ class LocalCacheClient {
   getPrivateToggle = () => this.#get('privateToggle');
 
   #set(key, value) {
-    logger.log(`Storing ${key} with value ${value} to localStorage`);
+    logger.debug(`Storing ${key} with value ${value} to localStorage`);
     localStorage.setItem(key, value);
   }
 
   #get(key) {
-    logger.log(`Getting ${key} from localStorage`);
+    logger.debug(`Getting ${key} from localStorage`);
 
     return localStorage.getItem(key);
   }

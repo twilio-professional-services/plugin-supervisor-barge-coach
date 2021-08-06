@@ -12,6 +12,14 @@ class Logger {
   };
 
   /**
+   * debug level log
+   * @param messages
+   */
+  debug = (...messages) => {
+    this.#_log({ level: 'debug', messages });
+  };
+
+  /**
    * error level log
    * @param messages
    */

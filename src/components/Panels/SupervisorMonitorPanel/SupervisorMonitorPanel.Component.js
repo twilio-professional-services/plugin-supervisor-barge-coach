@@ -6,8 +6,8 @@ import { Status } from './SupervisorMonitorPanel.Style';
 export default class SupervisorMonitorPanel extends AbstractPanel {
   componentDidUpdate = async () => {
     // Setup the listener if it hasn't already and we have an agentSid
-    if (!this.doc && this.props.agentWorkerSID) {
-      await this.setupListener(`syncDoc.${this.props.agentWorkerSID}`);
+    if (!this.doc && this.props.agentWorkerSid) {
+      await this.setupListener(`syncDoc.${this.props.agentWorkerSid}`);
     }
   };
 

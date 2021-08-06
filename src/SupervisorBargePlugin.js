@@ -100,6 +100,8 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
    * @param manager { import('@twilio/flex-ui').Manager }
    */
   async hydrateInitialState(manager) {
+    logger.log('Hydrating initial states');
+
     /*
      * Only used for the coach feature if some reason the browser refreshes after the agent is being monitored
      * we will lose the stickyWorker attribute that we use for workerSid (see \components\SupervisorBargeCoachButton.Component.js for reference)
@@ -109,10 +111,10 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
     const teamViewPath = localCacheClient.getTeamViewPath();
 
     // Check that the stickyWorker is null and that we are attempting to restore the last worker they monitored
-    if (workerSid === null && teamViewPath !== null) {
+    if (!workerSid && teamViewPath !== null) {
       /*
        * We are parsing the prop teamViewTaskPath into an array, split it between the '/',
-       * then finding which object in the array starts with WR, which is the SID we need
+       * then finding which object in the array starts with WR, which is the Sid we need
        */
       const taskSid = teamViewPath.split('/').filter((s) => s.includes('WR'));
 
@@ -129,6 +131,7 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
        * By default alerts are enabled unless they toggle it off
        */
       const privateToggle = localCacheClient.getPrivateToggle();
+      logger.log('privateToggle is', privateToggle);
       if (privateToggle === 'false') {
         manager.store.dispatch(BargeCoachStatusAction.setBargeCoachStatus({ coachingStatusPanel: false }));
       }

@@ -10,24 +10,15 @@ export default class SupervisorPrivateModeButtonComponent extends React.Componen
    * of the coachingStatusPanel along with updating the Sync Doc appropriately
    */
   togglePrivateMode = async () => {
-    const { coachingStatusPanel } = this.props;
-    const { coaching } = this.props;
-    const { task } = this.props;
-    const conference = task && task.conference;
-    const conferenceSID = conference && conference.conferenceSid;
+    const { coachingStatusPanel, coaching, agentWorkerSid, supervisorFullName } = this.props;
+    const conferenceSid = this.props.task?.conference?.conferenceSid;
 
     if (coachingStatusPanel) {
       this.props.setBargeCoachStatus({
         coachingStatusPanel: false,
       });
       // Updating the Sync Doc to reflect that we are no longer coaching and back into Monitoring
-      await syncClient.initSyncDoc(
-        this.props.agentWorkerSID,
-        conferenceSID,
-        this.props.supervisorFullName,
-        'is Monitoring',
-        'remove',
-      );
+      await syncClient.initSyncDoc(agentWorkerSid, conferenceSid, supervisorFullName, 'is Monitoring', 'remove');
     } else {
       this.props.setBargeCoachStatus({
         coachingStatusPanel: true,
@@ -38,13 +29,7 @@ export default class SupervisorPrivateModeButtonComponent extends React.Componen
        */
       if (coaching) {
         // Updating the Sync Doc to reflect that we are now coaching the agent
-        await syncClient.initSyncDoc(
-          this.props.agentWorkerSID,
-          conferenceSID,
-          this.props.supervisorFullName,
-          'is Coaching',
-          'add',
-        );
+        await syncClient.initSyncDoc(agentWorkerSid, conferenceSid, supervisorFullName, 'is Coaching', 'add');
       }
     }
   };
@@ -55,7 +40,6 @@ export default class SupervisorPrivateModeButtonComponent extends React.Componen
    */
   render() {
     const { coachingStatusPanel } = this.props;
-
     const isLiveCall = TaskHelper.isLiveCall(this.props.task);
 
     return (

@@ -8,14 +8,13 @@ import { Actions as BargeCoachStatusAction } from '../../states/BargeCoachState'
 import SupervisorBargeCoachButton from './SupervisorBargeCoachButton.Component';
 
 /*
- * Getting the Supervisor's workerSID so we can use it later, the Agent's workerSID (stickyWorker) we are monitoring
+ * Getting the Supervisor's workerSid so we can use it later, the Agent's workerSid (stickyWorker) we are monitoring
  * This is specific to coaching to ensure we are unmuting the correct worker, if there are multiple agents on the call
  */
 const mapStateToProps = (state) => {
-  const myWorkerSID = state?.flex?.worker?.worker?.sid;
-  const agentWorkerSID = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
+  const myWorkerSid = state?.flex?.worker?.worker?.sid;
+  const agentWorkerSid = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
   const supervisorFullName = state?.flex?.worker?.attributes?.full_name;
-  logger.log(`sticky worker = ${agentWorkerSID}`);
 
   /*
    * Also pulling back the states from the redux store as we will use those later
@@ -38,12 +37,12 @@ const mapStateToProps = (state) => {
    */
   if (teamViewPath !== null) {
     localCacheClient.setTeamViewPath(teamViewPath);
-    localCacheClient.setAgentSyncDoc(`syncDoc.${agentWorkerSID}`);
+    localCacheClient.setAgentSyncDoc(`syncDoc.${agentWorkerSid}`);
   }
 
   return {
-    myWorkerSID,
-    agentWorkerSID,
+    myWorkerSid,
+    agentWorkerSid,
     supervisorFullName,
     muted,
     barge,

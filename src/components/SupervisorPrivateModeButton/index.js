@@ -7,7 +7,7 @@ import { localCacheClient } from '../../services';
 import SupervisorPrivateModeButtonComponent from './SupervisorPrivateModeButton.Component';
 
 const mapStateToProps = (state) => {
-  const agentWorkerSID = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
+  const agentWorkerSid = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
   const supervisorFullName = state?.flex?.worker?.attributes?.full_name;
 
   const customReduxStore = state?.['barge-coach'].bargecoach;
@@ -21,7 +21,7 @@ const mapStateToProps = (state) => {
   localCacheClient.setPrivateToggle(coachingStatusPanel);
 
   return {
-    agentWorkerSID,
+    agentWorkerSid,
     supervisorFullName,
     coaching,
     coachingStatusPanel,

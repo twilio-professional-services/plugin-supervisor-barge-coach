@@ -6,8 +6,8 @@ import { Status } from './CoachingStatusPanel.Style';
 export default class CoachingStatusPanel extends AbstractPanel {
   componentDidUpdate = async () => {
     // Setup the listener if it hasn't already and we have an workerSid
-    if (!this.doc && this.props.myWorkerSID) {
-      await this.setupListener(`syncDoc.${this.props.myWorkerSID}`);
+    if (!this.doc && this.props.myWorkerSid) {
+      await this.setupListener(`syncDoc.${this.props.myWorkerSid}`);
     }
   };
 

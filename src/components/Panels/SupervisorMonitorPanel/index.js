@@ -7,7 +7,7 @@ import { Actions as BargeCoachStatusAction } from '../../../states/BargeCoachSta
 import SupervisorMonitorPanel from './SupervisorMonitorPanel.Component';
 
 const mapStateToProps = (state) => {
-  const agentWorkerSID = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
+  const agentWorkerSid = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
   const supervisorFullName = state?.flex?.worker?.attributes?.full_name;
 
   /*
@@ -18,7 +18,7 @@ const mapStateToProps = (state) => {
   const { supervisorArray } = customReduxStore;
 
   return {
-    agentWorkerSID,
+    agentWorkerSid,
     supervisorFullName,
     supervisorArray,
   };

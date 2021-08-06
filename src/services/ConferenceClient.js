@@ -33,58 +33,58 @@ class ConferenceClient {
   };
 
   /*
-   * We are calling the mute-unmute-participant Twilio function
-   * passing the conferenceSID, the participantSID, and
+   * We are calling the mute-unmute-participant Twilio Function passing the conferenceSid, the participantSid, and
    * flip them from mute/unmute respectively when clicking the button
    */
-  #toggleParticipantMute = async (conference, participantSid, muted) => {
+  #toggleParticipantMute = async (conferenceSid, participantSid, muted) => {
+    const action = muted ? 'Muting' : 'Unmuting';
+    logger.log(`${action} participant on conference ${conferenceSid} with supervisor ${participantSid}`);
+
     await this.#post('mute-unmute-participant', {
-      conference,
-      participant: participantSid,
+      conferenceSid,
+      participantSid,
       muted,
     });
-    logger.log(`${muted ? 'Muting' : 'Unmuting'} successful for participant`, participantSid);
+    logger.log(`${action} successful for participant`, participantSid);
   };
 
   /*
-   * We are calling the coaching Twilio function
-   * passing the conferenceSID, the participantSID, and
+   * We are calling the coaching Twilio function passing the conferenceSid, the participantSid, and
    * flip them from disable/enable coaching respectively when clicking the button
    */
-  #toggleParticipantCoaching = async (conference, participantSid, muted, coaching, agentSid) => {
-    logger.log(
-      `Passing conference: ${conference}, supervisor: ${participantSid}, and agent: ${agentSid} to the coaching Twilio function as ${coaching}`,
-    );
+  #toggleParticipantCoaching = async (conferenceSid, participantSid, muted, coaching, agentSid) => {
+    const action = coaching ? 'Enabling Coach' : 'Disabling Coach';
+    logger.log(`${action} on conference ${conferenceSid} between coach ${participantSid} and agent ${agentSid}`);
 
     await this.#post('coaching', {
-      conference,
-      participant: participantSid,
+      conferenceSid,
+      participantSid,
       muted,
       coaching,
       agentSid,
     });
 
-    logger.log(`${coaching ? 'Enabling Coach' : 'Disabling Coach'} successful for participant`, participantSid);
+    logger.log(`${action} successful for participant`, participantSid);
   };
 
   // Calling to toggle mute status to true (mute)
-  muteParticipant = async (conference, participantSid) => {
-    return this.#toggleParticipantMute(conference, participantSid, true);
+  muteParticipant = async (conferenceSid, participantSid) => {
+    return this.#toggleParticipantMute(conferenceSid, participantSid, true);
   };
 
   // Calling to toggle mute status to false (unmute)
-  unmuteParticipant = async (conference, participantSid) => {
-    return this.#toggleParticipantMute(conference, participantSid, false);
+  unmuteParticipant = async (conferenceSid, participantSid) => {
+    return this.#toggleParticipantMute(conferenceSid, participantSid, false);
   };
 
   // Calling to toggle coaching status to true (enable coaching) and toggle mute to false
-  enableCoaching = async (conference, participantSid, agentSid) => {
-    return this.#toggleParticipantCoaching(conference, participantSid, false, true, agentSid);
+  enableCoaching = async (conferenceSid, participantSid, agentSid) => {
+    return this.#toggleParticipantCoaching(conferenceSid, participantSid, false, true, agentSid);
   };
 
   // Calling to toggle coaching status to false (disable coaching) and toggle mute to true
-  disableCoaching = async (conference, participantSid, agentSid) => {
-    return this.#toggleParticipantCoaching(conference, participantSid, true, false, agentSid);
+  disableCoaching = async (conferenceSid, participantSid, agentSid) => {
+    return this.#toggleParticipantCoaching(conferenceSid, participantSid, true, false, agentSid);
   };
 }
 

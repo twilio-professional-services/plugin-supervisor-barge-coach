@@ -23,14 +23,16 @@ exports.handler = TokenValidator(async (context, event, callback) => {
   response.appendHeader('Content-Type', 'application/json');
   response.appendHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Passed in conference SID, Participant SID we are changing, and if we are muting or unmuting
-  const { conference, participant, muted } = event;
+  // Passed in conference Sid, Participant Sid we are changing, and if we are muting or unmuting
+  const { conferenceSid, participantSid, muted } = event;
 
-  console.log(`Updating participant ${participant} in conference ${conference}, toggling the mute status to ${muted}`);
+  console.log(
+    `Updating participant ${participantSid} in conference ${conferenceSid}, toggling the mute status to ${muted}`,
+  );
 
   try {
     const client = context.getTwilioClient();
-    const participantResponse = await client.conferences(conference).participants(participant).update({ muted });
+    const participantResponse = await client.conferences(conferenceSid).participants(participantSid).update({ muted });
     response.setBody({
       status: 200,
       participantResponse,
