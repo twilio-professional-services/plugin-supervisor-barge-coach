@@ -59,6 +59,7 @@ const mapStateToProps = (state) => {
  */
 const mapDispatchToProps = (dispatch) => ({
   setBargeCoachStatus: bindActionCreators(BargeCoachStatusAction.setBargeCoachStatus, dispatch),
+  resetBargeCoachStatus: bindActionCreators(BargeCoachStatusAction.resetBargeCoachStatus, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(SupervisorBargeCoachButton));

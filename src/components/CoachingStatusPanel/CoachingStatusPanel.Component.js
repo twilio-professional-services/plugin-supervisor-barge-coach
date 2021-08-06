@@ -1,13 +1,25 @@
 import React from 'react';
 
-import AbstractPanel from '../AbstractPanel';
+import AbstractSyncComponent from '../AbstractSyncComponent';
 import { Status } from './CoachingStatusPanel.Style';
 
-export default class CoachingStatusPanel extends AbstractPanel {
+export default class CoachingStatusPanel extends AbstractSyncComponent {
+  #listenerAdded = false;
+
+  /**
+   * Set Supervisor's name that is coaching into props
+   * @param doc
+   */
+  onDocUpdated = (doc) => {
+    const supervisorArray = doc.value.data.supervisors === null ? [] : [...doc.value.data.supervisors];
+    this.props.setBargeCoachStatus({ supervisorArray });
+  };
+
   componentDidUpdate = async () => {
     // Setup the listener if it hasn't already and we have an workerSid
-    if (!this.doc && this.props.myWorkerSid) {
-      await this.setupListener(`syncDoc.${this.props.myWorkerSid}`);
+    if (!this.#listenerAdded && this.props.myWorkerSid) {
+      this.#listenerAdded = true;
+      await this.setupListener(`syncDoc.${this.props.myWorkerSid}`, this.onDocUpdated);
     }
   };
 

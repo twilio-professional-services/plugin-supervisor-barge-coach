@@ -1,25 +1,22 @@
-// Mapping the agent's sid and supervisor full name
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withTheme } from '@twilio/flex-ui';
 
-import { Actions as BargeCoachStatusAction } from '../../../states/BargeCoachState';
-import SupervisorMonitorPanel from './SupervisorMonitorPanel.Component';
+import { Actions as BargeCoachStatusAction } from '../../states/BargeCoachState';
+import CoachingStatusPanel from './CoachingStatusPanel.Component';
 
+// Mapping the the logged in user sid so we can snag the Sync Doc
 const mapStateToProps = (state) => {
-  const agentWorkerSid = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
-  const supervisorFullName = state?.flex?.worker?.attributes?.full_name;
+  const myWorkerSid = state?.flex?.worker?.worker?.sid;
 
   /*
    * Also pulling back the states from the redux store as we will use those later
    * to manipulate the buttons
    */
-  const customReduxStore = state?.['barge-coach'].bargecoach;
-  const { supervisorArray } = customReduxStore;
+  const { supervisorArray } = state?.['barge-coach'].bargecoach;
 
   return {
-    agentWorkerSid,
-    supervisorFullName,
+    myWorkerSid,
     supervisorArray,
   };
 };
@@ -32,4 +29,4 @@ const mapDispatchToProps = (dispatch) => ({
   setBargeCoachStatus: bindActionCreators(BargeCoachStatusAction.setBargeCoachStatus, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTheme(SupervisorMonitorPanel));
+export default connect(mapStateToProps, mapDispatchToProps)(withTheme(CoachingStatusPanel));

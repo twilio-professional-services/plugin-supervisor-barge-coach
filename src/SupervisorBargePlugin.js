@@ -3,12 +3,7 @@ import { Actions, VERSION } from '@twilio/flex-ui';
 import React from 'react';
 
 import { localCacheClient, syncClient } from './services';
-import {
-  SupervisorPrivateModeButton,
-  SupervisorBargeCoachButton,
-  CoachingStatusPanel,
-  SupervisorMonitorPanel,
-} from './components';
+import { SupervisorPrivateModeButton, SupervisorBargeCoachButton, CoachingStatusPanel } from './components';
 import reducers, { namespace } from './states';
 import { Actions as BargeCoachStatusAction, initialState } from './states/BargeCoachState';
 import { logger } from './utils';
@@ -84,10 +79,6 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
     flex.Supervisor.TaskOverviewCanvas.Content.add(<SupervisorBargeCoachButton key="barge-coach-buttons" />);
     // Add the Supervisor Private Mode Toggle
     flex.Supervisor.TaskOverviewCanvas.Content.add(<SupervisorPrivateModeButton key="supervisor-private-button" />);
-    // Add the Supervisor Monitor Panel
-    flex.Supervisor.TaskCanvasTabs.Content.add(
-      <SupervisorMonitorPanel title="Supervisors Engaged" icon="Supervisor" key="supervisor-monitor-panel" />,
-    );
     // Adding Coaching Status Panel to notify the agent who is Coaching them
     flex.CallCanvas.Content.add(<CoachingStatusPanel key="coaching-status-panel"> </CoachingStatusPanel>, {
       sortOrder: -1,
@@ -131,7 +122,6 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
        * By default alerts are enabled unless they toggle it off
        */
       const privateToggle = localCacheClient.getPrivateToggle();
-      logger.log('privateToggle is', privateToggle);
       if (privateToggle === 'false') {
         manager.store.dispatch(BargeCoachStatusAction.setBargeCoachStatus({ coachingStatusPanel: false }));
       }

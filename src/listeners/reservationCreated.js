@@ -1,3 +1,5 @@
+import { Actions } from '@twilio/flex-ui';
+
 import { logger } from '../utils';
 import { Actions as BargeCoachStatusAction } from '../states/BargeCoachState';
 import { syncClient } from '../services';
@@ -12,14 +14,7 @@ export default function reservationCreated(manager) {
     // Register listener for reservation wrap up event
     reservation.on('wrapup', async () => {
       logger.log(`Hangup button triggered, clear the Sync Doc`);
-      manager.store.dispatch(
-        BargeCoachStatusAction.setBargeCoachStatus({
-          enableCoachButton: false,
-          coaching: false,
-          enableBargeinButton: false,
-          muted: true,
-        }),
-      );
+      manager.store.dispatch(BargeCoachStatusAction.resetBargeCoachStatus());
 
       const workerSid = manager.store.getState().flex?.worker?.worker?.sid;
       const agentSyncDoc = `syncDoc.${workerSid}`;

@@ -1,28 +1,24 @@
 {
   "name": "plugin-supervisor-barge-coach",
-  "version": "4.0.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "Flex Plugin to a barge-in and coach button to the monitor call canvas.",
   "scripts": {
     "postinstall": "flex-plugin pre-script-check",
     "lint": "eslint --ext js src/ functions/functions/",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "husky install",
-    "start": "cd functions && yarn st"
+    "prepare": "husky install"
   },
   "dependencies": {
-    "@emotion/core": "^10.0.28",
+    "@emotion/core": "^10.1.1",
     "@emotion/styled": "^10.0.27",
-    "flex-plugin-scripts": "^4.1.0",
-    "moment": "2.24.0",
-    "moment-timezone": "0.5.33",
+    "flex-plugin-scripts": "^4.1.3",
     "react": "16.5.2",
-    "react-dom": "16.5.2",
-    "react-moment": "0.9.7",
-    "url-join": "^4.0.1"
+    "react-dom": "16.5.2"
   },
   "devDependencies": {
     "@twilio/flex-ui": "^1",
-    "eslint": "^7.31.0",
+    "eslint": "^7.32.0",
     "eslint-config-twilio": "^1.35.1",
     "husky": "^7.0.1",
     "react-test-renderer": "16.5.2"

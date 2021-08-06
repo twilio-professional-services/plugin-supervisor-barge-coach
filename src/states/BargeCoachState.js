@@ -12,6 +12,11 @@ export const initialState = {
 
 export class Actions {
   static setBargeCoachStatus = (status) => ({ type: ACTION_SET_BARGE_COACH_STATUS, status });
+
+  static resetBargeCoachStatus = () => ({
+    type: ACTION_SET_BARGE_COACH_STATUS,
+    status: { ...initialState },
+  });
 }
 
 // Exporting and adding a reducer for the states we will use later for the buttons

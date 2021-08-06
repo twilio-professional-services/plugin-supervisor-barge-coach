@@ -52,14 +52,13 @@ class ConferenceClient {
    * We are calling the coaching Twilio function passing the conferenceSid, the participantSid, and
    * flip them from disable/enable coaching respectively when clicking the button
    */
-  #toggleParticipantCoaching = async (conferenceSid, participantSid, muted, coaching, agentSid) => {
+  #toggleParticipantCoaching = async (conferenceSid, participantSid, coaching, agentSid) => {
     const action = coaching ? 'Enabling Coach' : 'Disabling Coach';
     logger.log(`${action} on conference ${conferenceSid} between coach ${participantSid} and agent ${agentSid}`);
 
     await this.#post('coaching', {
       conferenceSid,
       participantSid,
-      muted,
       coaching,
       agentSid,
     });
@@ -67,24 +66,42 @@ class ConferenceClient {
     logger.log(`${action} successful for participant`, participantSid);
   };
 
-  // Calling to toggle mute status to true (mute)
+  /**
+   * Calling to toggle mute status to true (mute)
+   * @param conferenceSid the conference to unmute
+   * @param participantSid the participantSid (the supervisor)
+   */
   muteParticipant = async (conferenceSid, participantSid) => {
     return this.#toggleParticipantMute(conferenceSid, participantSid, true);
   };
 
-  // Calling to toggle mute status to false (unmute)
+  /**
+   * Calling to toggle mute status to false (unmute)
+   * @param conferenceSid the conference to unmute
+   * @param participantSid the participantSid (the supervisor)
+   */
   unmuteParticipant = async (conferenceSid, participantSid) => {
     return this.#toggleParticipantMute(conferenceSid, participantSid, false);
   };
 
-  // Calling to toggle coaching status to true (enable coaching) and toggle mute to false
+  /**
+   *  Calling to toggle coaching status to true (enable coaching) and toggle mute to false
+   * @param conferenceSid the conference to disable coaching on
+   * @param participantSid the participantSid (the supervisor)
+   * @param agentSid the agentSid
+   */
   enableCoaching = async (conferenceSid, participantSid, agentSid) => {
-    return this.#toggleParticipantCoaching(conferenceSid, participantSid, false, true, agentSid);
+    return this.#toggleParticipantCoaching(conferenceSid, participantSid, true, agentSid);
   };
 
-  // Calling to toggle coaching status to false (disable coaching) and toggle mute to true
+  /**
+   * Calling to toggle coaching status to false (disable coaching) and toggle mute to true
+   * @param conferenceSid the conference to disable coaching on
+   * @param participantSid the participantSid (the supervisor)
+   * @param agentSid the agentSid
+   */
   disableCoaching = async (conferenceSid, participantSid, agentSid) => {
-    return this.#toggleParticipantCoaching(conferenceSid, participantSid, true, false, agentSid);
+    return this.#toggleParticipantCoaching(conferenceSid, participantSid, false, agentSid);
   };
 }
 
