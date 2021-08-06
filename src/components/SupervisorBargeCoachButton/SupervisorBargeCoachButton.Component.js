@@ -1,13 +1,100 @@
 import * as React from 'react';
-import { IconButton, TaskHelper } from '@twilio/flex-ui';
+import { TaskHelper } from '@twilio/flex-ui';
 
 import { syncClient, conferenceClient } from '../../services';
 import { logger } from '../../utils';
 import { ButtonContainer, buttonStyle, buttonStyleActive } from './SupervisorBargeCoachButton.Style';
 import AbstractSyncComponent from '../AbstractSyncComponent';
+import { Button } from '../Button';
 
 export default class SupervisorBargeCoachButton extends AbstractSyncComponent {
   #listenerAdded = false;
+
+  /**
+   * Wait for an agentSid to become available and then set up the doc listener once
+   */
+  componentDidUpdate = async () => {
+    // Setup the listener if it hasn't already and we have an agentSid
+    if (!this.#listenerAdded && this.props.agentWorkerSid) {
+      this.#listenerAdded = true;
+      await this.setupListener(`syncDoc.${this.props.agentWorkerSid}`, this.onDocUpdated);
+    }
+  };
+
+  /*
+   * Render the coach and barge-in buttons, disable if the call isn't live or
+   * if the supervisor isn't monitoring the call, toggle the icon based on coach and barge-in status
+   */
+  render() {
+    const {
+      muted,
+      mutingLoading,
+      barge,
+      bargingLoading,
+      enableBargeinButton,
+      coaching,
+      coachingLoading,
+      enableCoachButton,
+      task,
+      disableAllButtons,
+    } = this.props;
+    const isLiveCall = TaskHelper.isLiveCall(task);
+
+    return (
+      <ButtonContainer>
+        <Button
+          loading={mutingLoading}
+          icon={muted ? 'MuteLargeBold' : 'MuteLarge'}
+          disabled={
+            !isLiveCall || !enableBargeinButton || !enableCoachButton || (!barge && !coaching) || disableAllButtons
+          }
+          onClick={this.asyncToggleMuteHandler}
+          themeOverride={this.props.theme.CallCanvas.Button}
+          title={muted ? 'Unmute' : 'Mute'}
+          style={buttonStyle}
+        />
+        <Button
+          loading={bargingLoading}
+          icon={barge ? `IncomingCallBold` : 'IncomingCall'}
+          disabled={!isLiveCall || !enableBargeinButton || disableAllButtons}
+          onClick={this.asyncBargeHandleClick}
+          themeOverride={this.props.theme.CallCanvas.Button}
+          title={barge ? 'Barge-Out' : 'Barge-In'}
+          style={barge ? buttonStyleActive : buttonStyle}
+        />
+        <Button
+          loading={coachingLoading}
+          icon={coaching ? `DefaultAvatarBold` : `DefaultAvatar`}
+          disabled={!isLiveCall || !enableCoachButton || disableAllButtons}
+          onClick={this.asyncCoachHandleClick}
+          themeOverride={this.props.theme.CallCanvas.Button}
+          title={coaching ? 'Disable Coach Mode' : 'Enable Coach Mode'}
+          style={coaching ? buttonStyleActive : buttonStyle}
+        />
+      </ButtonContainer>
+    );
+  }
+
+  /**
+   * A wrapper for invoking an action that handles setting the loader and error animations
+   * @param key loading key
+   * @param action the action
+   */
+  actionAsyncHandler = async (key, action) => {
+    const loadingKey = `${key}Loading`;
+    this.props.setBargeCoachStatus({ [loadingKey]: true });
+    try {
+      await action();
+    } finally {
+      this.props.setBargeCoachStatus({ [loadingKey]: false });
+    }
+  };
+
+  asyncToggleMuteHandler = () => this.actionAsyncHandler('muting', this.toggleMuteHandle);
+
+  asyncBargeHandleClick = () => this.actionAsyncHandler('barging', this.bargeHandleClick);
+
+  asyncCoachHandleClick = () => this.actionAsyncHandler('coaching', this.coachHandleClick);
 
   /**
    * Unmuates (enables) the participant
@@ -163,7 +250,7 @@ export default class SupervisorBargeCoachButton extends AbstractSyncComponent {
 
   /**
    * Listen to doc update and when the agent wraps up the call, cleanup the state
-   * @param doc the updated doc value
+   * @param doc the doc to listen on
    */
   onDocUpdated = (doc) => {
     const supervisors = doc.value.data.supervisors || [];
@@ -173,55 +260,6 @@ export default class SupervisorBargeCoachButton extends AbstractSyncComponent {
       this.props.resetBargeCoachStatus();
     }
   };
-
-  /**
-   * Wait for an agentSid to become available and then set up the doc listener once
-   */
-  componentDidUpdate = async () => {
-    // Setup the listener if it hasn't already and we have an agentSid
-    if (!this.#listenerAdded && this.props.agentWorkerSid) {
-      this.#listenerAdded = true;
-      await this.setupListener(`syncDoc.${this.props.agentWorkerSid}`, this.onDocUpdated);
-    }
-  };
-
-  /*
-   * Render the coach and barge-in buttons, disable if the call isn't live or
-   * if the supervisor isn't monitoring the call, toggle the icon based on coach and barge-in status
-   */
-  render() {
-    const { muted, barge, enableBargeinButton, coaching, enableCoachButton, task } = this.props;
-    const isLiveCall = TaskHelper.isLiveCall(task);
-
-    return (
-      <ButtonContainer>
-        <IconButton
-          icon={muted ? 'MuteLargeBold' : 'MuteLarge'}
-          disabled={!isLiveCall || !enableBargeinButton || !enableCoachButton || (!barge && !coaching)}
-          onClick={this.toggleMuteHandle}
-          themeOverride={this.props.theme.CallCanvas.Button}
-          title={muted ? 'Unmute' : 'Mute'}
-          style={buttonStyle}
-        />
-        <IconButton
-          icon={barge ? `IncomingCallBold` : 'IncomingCall'}
-          disabled={!isLiveCall || !enableBargeinButton}
-          onClick={this.bargeHandleClick}
-          themeOverride={this.props.theme.CallCanvas.Button}
-          title={barge ? 'Barge-Out' : 'Barge-In'}
-          style={barge ? buttonStyleActive : buttonStyle}
-        />
-        <IconButton
-          icon={coaching ? `DefaultAvatarBold` : `DefaultAvatar`}
-          disabled={!isLiveCall || !enableCoachButton}
-          onClick={this.coachHandleClick}
-          themeOverride={this.props.theme.CallCanvas.Button}
-          title={coaching ? 'Disable Coach Mode' : 'Enable Coach Mode'}
-          style={coaching ? buttonStyleActive : buttonStyle}
-        />
-      </ButtonContainer>
-    );
-  }
 
   /**
    * Fetches the conferenceSid from the task event

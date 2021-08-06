@@ -21,12 +21,17 @@ const mapStateToProps = (state) => {
    * to manipulate the buttons
    */
   const customReduxStore = state?.['barge-coach'].bargecoach;
-  const { muted } = customReduxStore;
-  const { barge } = customReduxStore;
-  const { enableBargeinButton } = customReduxStore;
-  const { coaching } = customReduxStore;
-  const { enableCoachButton } = customReduxStore;
-  const { coachingStatusPanel } = customReduxStore;
+  const {
+    muted,
+    barge,
+    enableBargeinButton,
+    coaching,
+    enableCoachButton,
+    coachingStatusPanel,
+    coachingLoading,
+    bargingLoading,
+    mutingLoading,
+  } = customReduxStore;
 
   const teamViewPath = state?.flex?.router?.location?.pathname;
 
@@ -45,11 +50,15 @@ const mapStateToProps = (state) => {
     agentWorkerSid,
     supervisorFullName,
     muted,
+    mutingLoading,
     barge,
     enableBargeinButton,
+    bargingLoading,
     coaching,
     enableCoachButton,
     coachingStatusPanel,
+    coachingLoading,
+    disableAllButtons: coachingLoading || bargingLoading || mutingLoading,
   };
 };
 

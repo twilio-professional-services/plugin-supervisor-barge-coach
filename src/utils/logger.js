@@ -4,6 +4,12 @@ class Logger {
   _prefix = '';
 
   /**
+   * Sets the prefix
+   * @param prefix the prefix of the logger
+   */
+  _setPrefix = (prefix) => (this._prefix = prefix);
+
+  /**
    * info level log
    * @param messages
    */

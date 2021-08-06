@@ -6,7 +6,7 @@ import { localCacheClient, syncClient } from './services';
 import { SupervisorPrivateModeButton, SupervisorBargeCoachButton, CoachingStatusPanel } from './components';
 import reducers, { namespace } from './states';
 import { Actions as BargeCoachStatusAction, initialState } from './states/BargeCoachState';
-import { logger } from './utils';
+import { logger, notifications } from './utils';
 import * as listeners from './listeners';
 
 export default class SupervisorBargeCoachPlugin extends FlexPlugin {
@@ -15,7 +15,8 @@ export default class SupervisorBargeCoachPlugin extends FlexPlugin {
   constructor() {
     super(SupervisorBargeCoachPlugin.PLUGIN_NAME);
 
-    logger._prefix = SupervisorBargeCoachPlugin.PLUGIN_NAME;
+    logger._setPrefix(SupervisorBargeCoachPlugin.PLUGIN_NAME);
+    notifications._registerNotifications(SupervisorBargeCoachPlugin.PLUGIN_NAME);
   }
 
   /**

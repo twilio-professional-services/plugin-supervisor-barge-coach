@@ -1,6 +1,6 @@
 import { Manager } from '@twilio/flex-ui';
 
-import { logger } from '../utils';
+import { logger, notifications } from '../utils';
 
 class ConferenceClient {
   #manager;
@@ -14,7 +14,7 @@ class ConferenceClient {
    * @param path  the path to post to
    * @param params the post parameters
    */
-  #post = async (path, params) => {
+  #post = async (path, params, errorNotification) => {
     const body = {
       ...params,
       Token: this.#manager.store.getState().flex.session.ssoTokenPayload.token,
@@ -28,8 +28,13 @@ class ConferenceClient {
       },
     };
 
-    const resp = await fetch(`${process.env.REACT_APP_SERVICE_BASE_URL}/${path}`, options);
-    return resp.json();
+    try {
+      const resp = await fetch(`${process.env.REACT_APP_SERVICE_BASE_URL}/${path}`, options);
+      return resp.json();
+    } catch (e) {
+      notifications.error(errorNotification);
+      throw e;
+    }
   };
 
   /*
@@ -40,11 +45,15 @@ class ConferenceClient {
     const action = muted ? 'Muting' : 'Unmuting';
     logger.log(`${action} participant on conference ${conferenceSid} with supervisor ${participantSid}`);
 
-    await this.#post('mute-unmute-participant', {
-      conferenceSid,
-      participantSid,
-      muted,
-    });
+    await this.#post(
+      'mute-unmute-participant',
+      {
+        conferenceSid,
+        participantSid,
+        muted,
+      },
+      `Could not ${muted ? 'mute' : 'unmute'} participant. Please try again later.`,
+    );
     logger.log(`${action} successful for participant`, participantSid);
   };
 
@@ -56,12 +65,16 @@ class ConferenceClient {
     const action = coaching ? 'Enabling Coach' : 'Disabling Coach';
     logger.log(`${action} on conference ${conferenceSid} between coach ${participantSid} and agent ${agentSid}`);
 
-    await this.#post('coaching', {
-      conferenceSid,
-      participantSid,
-      coaching,
-      agentSid,
-    });
+    await this.#post(
+      'coaching',
+      {
+        conferenceSid,
+        participantSid,
+        coaching,
+        agentSid,
+      },
+      `Could not ${coaching ? 'enable' : 'disable'} coaching. Please try again later.`,
+    );
 
     logger.log(`${action} successful for participant`, participantSid);
   };
