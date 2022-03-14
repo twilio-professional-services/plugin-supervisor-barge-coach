@@ -30,6 +30,7 @@ exports.handler = TokenValidator(async (context, event, callback) => {
     const participantResponse = await client.conferences(conferenceSid).participants(participantSid).update({
       coaching,
       callSidToCoach: agentSid,
+      muted: coaching ? false : true,
     });
     response.setBody({
       status: 200,
