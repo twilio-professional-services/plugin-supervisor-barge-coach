@@ -1,4 +1,4 @@
-import { FlexPlugin } from 'flex-plugin';
+import { FlexPlugin } from '@twilio/flex-plugin';
 import { Actions, VERSION } from '@twilio/flex-ui';
 import React from 'react';
 
