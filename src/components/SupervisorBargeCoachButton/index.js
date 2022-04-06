@@ -16,6 +16,9 @@ const mapStateToProps = (state) => {
   const agentWorkerSid = state?.flex?.supervisor?.stickyWorker?.worker?.sid;
   const supervisorFullName = state?.flex?.worker?.attributes?.full_name;
 
+  const monitoredWorkers = state?.flex?.supervisor?.callMonitoring?.workers;
+  const monitoredWorkerSid = Array.isArray(monitoredWorkers) && monitoredWorkers[0].sid;
+
   /*
    * Also pulling back the states from the redux store as we will use those later
    * to manipulate the buttons
@@ -49,6 +52,7 @@ const mapStateToProps = (state) => {
     myWorkerSid,
     agentWorkerSid,
     supervisorFullName,
+    monitoredWorkerSid,
     muted,
     mutingLoading,
     barge,

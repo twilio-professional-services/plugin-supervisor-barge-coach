@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import * as React from 'react';
 import { TaskHelper } from '@twilio/flex-ui';
 
@@ -27,6 +28,8 @@ export default class SupervisorBargeCoachButton extends AbstractSyncComponent {
    */
   render() {
     const {
+      agentWorkerSid,
+      monitoredWorkerSid,
       muted,
       mutingLoading,
       barge,
@@ -40,14 +43,27 @@ export default class SupervisorBargeCoachButton extends AbstractSyncComponent {
     } = this.props;
     const isLiveCall = TaskHelper.isLiveCall(task);
 
+    const isMonitoredWorkerSelected = agentWorkerSid === monitoredWorkerSid;
+
+    const isMuteButtonDisabled =
+      !isLiveCall ||
+      !enableBargeinButton ||
+      !enableCoachButton ||
+      (!barge && !coaching) ||
+      !isMonitoredWorkerSelected ||
+      disableAllButtons;
+
+    const isBargeButtonDisabled =
+      !isLiveCall || !enableBargeinButton || !isMonitoredWorkerSelected || disableAllButtons;
+
+    const isCoachButtonDisabled = !isLiveCall || !enableCoachButton || !isMonitoredWorkerSelected || disableAllButtons;
+
     return (
       <ButtonContainer>
         <Button
           loading={mutingLoading}
           icon={muted ? 'MuteLargeBold' : 'MuteLarge'}
-          disabled={
-            !isLiveCall || !enableBargeinButton || !enableCoachButton || (!barge && !coaching) || disableAllButtons
-          }
+          disabled={isMuteButtonDisabled}
           onClick={this.asyncToggleMuteHandler}
           themeOverride={this.props.theme.CallCanvas.Button}
           title={muted ? 'Unmute' : 'Mute'}
@@ -56,16 +72,16 @@ export default class SupervisorBargeCoachButton extends AbstractSyncComponent {
         <Button
           loading={bargingLoading}
           icon={barge ? `IncomingCallBold` : 'IncomingCall'}
-          disabled={!isLiveCall || !enableBargeinButton || disableAllButtons}
+          disabled={isBargeButtonDisabled}
           onClick={this.asyncBargeHandleClick}
           themeOverride={this.props.theme.CallCanvas.Button}
           title={barge ? 'Barge-Out' : 'Barge-In'}
-          style={barge ? buttonStyleActive : buttonStyle}
+          style={barge && isMonitoredWorkerSelected ? buttonStyleActive : buttonStyle}
         />
         <Button
           loading={coachingLoading}
           icon={coaching ? `DefaultAvatarBold` : `DefaultAvatar`}
-          disabled={!isLiveCall || !enableCoachButton || disableAllButtons}
+          disabled={isCoachButtonDisabled}
           onClick={this.asyncCoachHandleClick}
           themeOverride={this.props.theme.CallCanvas.Button}
           title={coaching ? 'Disable Coach Mode' : 'Enable Coach Mode'}
