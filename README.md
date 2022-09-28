@@ -3,7 +3,8 @@
 </a>
 
 # Notice - Legacy Code
-This plugin is no longer maintained as of September 28, 2022. Supervisor Barge Coach has been migrated to <a href="https://github.com/twilio-professional-services/twilio-proserv-flex-project-template/" target="_blank">Twilio Professional Services Flex Template</a>.  Supervisor Barge Coach has been updated to support both 1.X and 2.X version with the template.
+This plugin is no longer maintained as of September 28, 2022. Supervisor Barge Coach has been migrated to
+<a href="https://github.com/twilio-professional-services/twilio-proserv-flex-project-template/" target="_blank">Twilio Professional Services Flex Template</a>.  Supervisor Barge Coach has been updated to support both 1.X and 2.X Flex versions within the template.
 
 # Twilio Flex Plugin - Supervisor Barge-In and Coach
 
