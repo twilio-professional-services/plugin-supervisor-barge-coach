@@ -1,7 +1,7 @@
-import { Manager } from '@twilio/flex-ui';
-import { SyncClient as TwilioSyncClient } from 'twilio-sync';
+import { Manager } from "@twilio/flex-ui";
+import { SyncClient as TwilioSyncClient } from "twilio-sync";
 
-import { logger } from '../utils';
+import { logger } from "../utils";
 
 class SyncClient {
   #client;
@@ -9,10 +9,15 @@ class SyncClient {
   constructor(manager) {
     this.#client = new TwilioSyncClient(manager.user.token);
 
-    manager.store.getState().flex.session.loginHandler.on('tokenUpdated', () => {
-      logger.log('Refreshing SyncClient Token');
-      this.#client.updateToken(manager.store.getState().flex.session.getTokenInfo().token);
-    });
+    manager.store
+      .getState()
+      .flex.session.loginHandler.on("tokenUpdated", () => {
+        logger.log("Refreshing SyncClient Token");
+        this.#client.updateToken(
+          manager.store.getState().flex.session.loginHandler.getTokenInfo()
+            .token
+        );
+      });
   }
 
   /**
@@ -33,11 +38,17 @@ class SyncClient {
    * @param updateStatus
    * @return {Promise<void>}
    */
-  initSyncDoc = async (workerSid, conferenceSid, supervisorFullName, supervisorStatus, updateStatus) => {
+  initSyncDoc = async (
+    workerSid,
+    conferenceSid,
+    supervisorFullName,
+    supervisorStatus,
+    updateStatus
+  ) => {
     const docName = `syncDoc.${workerSid}`;
     const doc = await this.getSyncDoc(docName);
     logger.log(
-      `Updating (${updateStatus}) doc ${docName} with supervisors ${supervisorFullName} (${supervisorStatus}) on conference ${conferenceSid}`,
+      `Updating (${updateStatus}) doc ${docName} with supervisors ${supervisorFullName} (${supervisorStatus}) on conference ${conferenceSid}`
     );
     /*
      * Getting the latest Sync Doc agent list and storing in an array
@@ -55,7 +66,7 @@ class SyncClient {
      * to push/add the supervisor from the Supervisor Array within the Sync Doc
      * adding their Full Name and Conference - the Agent will leverage these values
      */
-    if (updateStatus === 'add') {
+    if (updateStatus === "add") {
       supervisorList.push({
         conference: conferenceSid,
         supervisor: supervisorFullName,
@@ -70,9 +81,11 @@ class SyncClient {
      * Checking Updated Status we pass during the button click
      * to splice/remove the Supervisor from the Supervisor Array within the Sync Doc
      */
-    if (updateStatus === 'remove') {
+    if (updateStatus === "remove") {
       // Get the index of the Supervisor we need to remove in the array
-      const removeSupervisorIndex = supervisorList.findIndex((s) => s.supervisor === supervisorFullName);
+      const removeSupervisorIndex = supervisorList.findIndex(
+        (s) => s.supervisor === supervisorFullName
+      );
       // Ensure we get something back, let's splice this index where the Supervisor is within the array
       if (removeSupervisorIndex > -1) {
         supervisorList.splice(removeSupervisorIndex, 1);
