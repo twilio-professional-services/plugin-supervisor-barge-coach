@@ -2,11 +2,11 @@
 <img src="https://static0.twilio.com/marketing/bundles/marketing/img/logos/wordmark-red.svg" alt="Twilio" width="250" />
 </a>
 
-# Notice - Legacy Code
-This plugin is no longer maintained as of September 28, 2022. Supervisor Barge Coach has been migrated to the
-[Twilio Professional Services - Flex Project Template](https://github.com/twilio-professional-services/twilio-proserv-flex-project-template).  Where supervisor Barge Coach has been updated to support both 1.X and 2.X Flex versions as features within the template.
-
 # Twilio Flex Plugin - Supervisor Barge-In and Coach
+
+> [!IMPORTANT]
+> This plugin is no longer maintained as of September 28, 2022. Supervisor Barge Coach has been migrated to the
+> [Twilio Professional Services - Flex Project Template](https://github.com/twilio-professional-services/twilio-proserv-flex-project-template).  Where supervisor Barge Coach has been updated to support 2.X Flex as a feature within the template.
 
 Twilio Flex Plugins allow you to customize the appearance and behavior of [Twilio Flex](https://www.twilio.com/flex). If you want to learn more about the capabilities and how to use the API, check out our [Flex documentation](https://www.twilio.com/docs/flex).
 
